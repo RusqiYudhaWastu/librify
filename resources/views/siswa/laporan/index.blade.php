@@ -101,7 +101,7 @@
                     </div>
                 </div>
 
-                {{-- 2. TAB RIWAYAT (DENGAN FILTER & CETAK PDF) --}}
+                {{-- 2. TAB RIWAYAT --}}
                 <div x-show="activeTab === 'riwayat'" x-transition>
                     
                     {{-- FILTER BAR --}}
@@ -185,19 +185,19 @@
                                             @endif
                                         </td>
                                         <td class="px-8 py-5 text-center">
-                                            {{-- ✅ Tombol Detail Riwayat --}}
-                                            <button @click="detailData = {
-                                                type: 'loan',
-                                                item: '{{ $loan->item->name }}',
-                                                asset_code: '{{ $loan->item->asset_code }}',
-                                                qty: '{{ $loan->quantity }}',
-                                                date: '{{ $loan->created_at->format('d M Y, H:i') }}',
-                                                status: '{{ $statusText }}',
-                                                desc: '{{ $loan->reason }}',
-                                                feedback: '{{ $loan->admin_note ?? 'Tidak ada catatan.' }}',
-                                                return_date: '{{ $loan->return_date ? \Carbon\Carbon::parse($loan->return_date)->format('d M Y, H:i') : 'Belum dikembalikan' }}',
-                                                condition: '{{ $loan->return_condition ?? '-' }}'
-                                            }; modalDetail = true" class="w-9 h-9 rounded-xl bg-slate-100 text-slate-500 hover:bg-blue-600 hover:text-white transition-all flex items-center justify-center shadow-sm mx-auto">
+                                            <button type="button" @click='detailData = {
+                                                type: "loan",
+                                                item: @json($loan->item->name),
+                                                asset_code: @json($loan->item->asset_code),
+                                                qty: "{{ $loan->quantity }}",
+                                                date: "{{ $loan->created_at->format("d M Y, H:i") }}",
+                                                status: "{{ $statusText }}",
+                                                desc: @json($loan->reason),
+                                                feedback: @json($loan->admin_note ?? "Tidak ada catatan."),
+                                                return_date: "{{ $loan->return_date ? \Carbon\Carbon::parse($loan->return_date)->format("d M Y, H:i") : "Belum dikembalikan" }}",
+                                                condition: "{{ $loan->return_condition ?? "-" }}"
+                                            }; modalDetail = true' 
+                                            class="w-9 h-9 rounded-xl bg-slate-100 text-slate-500 hover:bg-blue-600 hover:text-white transition-all flex items-center justify-center shadow-sm mx-auto">
                                                 <i class="bi bi-eye-fill"></i>
                                             </button>
                                         </td>
@@ -215,63 +215,96 @@
                     </div>
                 </div>
 
-                {{-- 3. TAB CONTENT: DAFTAR LAPORAN --}}
+                {{-- 3. TAB CONTENT: DAFTAR LAPORAN (CARD MODEL BARU) --}}
                 <div x-show="activeTab === 'laporan'" x-transition x-cloak>
-                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                         @forelse($reports as $report)
+                        {{-- CARD SEJAJAR & RAPI --}}
                         <div x-show="searchQuery === '' || '{{ strtolower($report->item->name) }}'.includes(searchQuery.toLowerCase())" 
-                             class="bg-white p-8 rounded-[2.5rem] border border-gray-100 shadow-sm hover:shadow-xl transition-all group relative overflow-hidden">
+                             class="p-8 rounded-[2.5rem] border border-gray-100 bg-white hover:border-blue-200 hover:shadow-xl transition-all relative overflow-hidden group flex flex-col justify-between h-full min-h-[300px] text-left">
                             
-                            {{-- Status Badge --}}
-                            <div class="absolute top-6 right-6">
-                                <span class="px-3 py-1.5 rounded-lg text-[9px] font-black uppercase tracking-widest
-                                    {{ $report->status === 'pending' ? 'bg-orange-50 text-orange-600 border border-orange-100' : '' }}
-                                    {{ $report->status === 'process' ? 'bg-blue-50 text-blue-600 border border-blue-100' : '' }}
-                                    {{ $report->status === 'completed' ? 'bg-emerald-50 text-emerald-600 border border-emerald-100' : '' }}">
-                                    {{ $report->status === 'pending' ? 'Menunggu' : ($report->status === 'process' ? 'Diproses' : 'Selesai') }}
-                                </span>
+                            {{-- 1. Status Color Bar (Indikator Warna Kiri) --}}
+                            <div class="absolute top-0 left-0 w-2 h-full 
+                                {{ $report->status === 'pending' ? 'bg-orange-500' : '' }}
+                                {{ $report->status === 'process' ? 'bg-blue-500' : '' }}
+                                {{ $report->status === 'completed' || $report->status === 'fixed' ? 'bg-emerald-500' : '' }}">
                             </div>
 
-                            <div class="flex items-center gap-4 mb-6">
-                                <div class="w-12 h-12 rounded-2xl bg-red-50 text-red-600 flex items-center justify-center font-bold text-lg shadow-inner">
-                                    <i class="bi bi-tools"></i>
+                            {{-- 2. Tombol Detail (Fixed Top Right) --}}
+                            <div class="absolute top-6 right-6 z-20">
+                                <button type="button" @click='detailData = {
+                                    type: "report",
+                                    item: @json($report->item->name),
+                                    asset_code: @json($report->item->asset_code),
+                                    date: "{{ $report->created_at->format("d M Y, H:i") }}",
+                                    desc: @json($report->description),
+                                    status: "{{ $report->status }}",
+                                    feedback: @json($report->admin_note ?? "Belum ada tanggapan teknisi."),
+                                    photo: @json($report->photo_path ? asset("storage/".$report->photo_path) : null)
+                                }; modalDetail = true' 
+                                class="w-10 h-10 rounded-full bg-white border border-gray-100 text-gray-400 hover:text-blue-600 hover:border-blue-100 flex items-center justify-center shadow-sm transition-all cursor-pointer">
+                                    <i class="bi bi-eye-fill"></i>
+                                </button>
+                            </div>
+
+                            {{-- 3. Top Content --}}
+                            <div class="flex-1 pr-12 mb-4 relative z-10">
+                                <div class="mb-4">
+                                    <p class="text-[9px] font-black text-gray-400 uppercase tracking-widest mb-2 leading-none text-left">{{ $report->created_at->diffForHumans() }}</p>
+                                    <h4 class="text-lg font-black text-slate-900 uppercase leading-tight truncate w-full">{{ $report->item->name }}</h4>
+                                    <p class="text-[10px] font-black text-blue-500 mt-1 uppercase text-left">Kode: {{ $report->item->asset_code }}</p>
                                 </div>
-                                <div>
-                                    <h4 class="font-black text-gray-900 uppercase text-sm leading-tight">{{ Str::limit($report->item->name, 20) }}</h4>
-                                    <p class="text-[10px] font-bold text-gray-400 mt-1 uppercase">{{ $report->created_at->diffForHumans() }}</p>
+
+                                {{-- Status Badge Text --}}
+                                <div class="mb-4">
+                                    <span class="px-2.5 py-1 rounded-lg text-[8px] font-black uppercase border shadow-sm leading-none
+                                        {{ $report->status === 'pending' ? 'bg-orange-50 text-orange-600 border-orange-100' : '' }}
+                                        {{ $report->status === 'process' ? 'bg-blue-50 text-blue-600 border-blue-100' : '' }}
+                                        {{ $report->status === 'completed' || $report->status === 'fixed' ? 'bg-emerald-50 text-emerald-600 border-emerald-100' : '' }}">
+                                        {{ $report->status === 'pending' ? 'Menunggu' : ($report->status === 'process' ? 'Diproses' : 'Selesai') }}
+                                    </span>
+                                </div>
+
+                                <div class="p-6 bg-gray-50 rounded-3xl border border-gray-100 mb-2 shadow-inner text-left leading-none h-28 overflow-hidden relative">
+                                    <p class="text-[9px] font-black text-red-500 uppercase mb-3 tracking-widest leading-none">Keluhan Saya:</p>
+                                    <p class="text-xs text-gray-600 font-medium italic leading-relaxed text-left line-clamp-3">"{{ $report->description }}"</p>
+                                    
+                                    {{-- ✅ Indikator Ada Foto --}}
+                                    @if($report->photo_path)
+                                        <div class="absolute bottom-3 right-3 text-red-400 text-xs flex items-center gap-1 bg-white px-2 py-1 rounded-lg border border-red-50 shadow-sm">
+                                            <i class="bi bi-camera-fill"></i> <span class="text-[8px] font-bold uppercase">Bukti</span>
+                                        </div>
+                                    @endif
+                                    <div class="absolute bottom-0 left-0 w-full h-6 bg-gradient-to-t from-gray-50 to-transparent"></div>
                                 </div>
                             </div>
 
-                            <div class="p-4 bg-gray-50 rounded-2xl border border-gray-100 mb-6 h-24 overflow-hidden relative">
-                                <p class="text-[10px] font-black text-gray-400 uppercase mb-2">Keluhan:</p>
-                                <p class="text-xs text-gray-600 italic leading-relaxed line-clamp-3">"{{ $report->description }}"</p>
-                                
-                                {{-- ✅ Indikator Ada Foto di Card --}}
-                                @if($report->photo_path)
-                                    <div class="absolute bottom-2 right-2 flex items-center gap-1 text-[9px] font-bold text-red-500 bg-white px-2 py-1 rounded-lg border border-red-100 shadow-sm">
-                                        <i class="bi bi-camera-fill"></i> Ada Bukti
+                            {{-- 4. Bottom Info (Feedback Indicator) --}}
+                            <div class="mt-auto relative z-10 pt-4 border-t border-gray-50">
+                                @if($report->admin_note)
+                                    <div class="flex items-center gap-3">
+                                        <div class="w-8 h-8 rounded-full bg-slate-900 text-white flex items-center justify-center text-xs"><i class="bi bi-chat-text-fill"></i></div>
+                                        <div>
+                                            <p class="text-[9px] font-bold text-slate-400 uppercase leading-none mb-1">Balasan Teknisi</p>
+                                            <p class="text-[10px] font-black text-slate-800 uppercase leading-none">Ada Tanggapan</p>
+                                        </div>
+                                    </div>
+                                @else
+                                    <div class="flex items-center gap-3 opacity-50">
+                                        <div class="w-8 h-8 rounded-full bg-gray-100 text-gray-400 flex items-center justify-center text-xs"><i class="bi bi-hourglass"></i></div>
+                                        <div>
+                                            <p class="text-[9px] font-bold text-gray-400 uppercase leading-none mb-1">Status</p>
+                                            <p class="text-[10px] font-black text-gray-500 uppercase leading-none">Menunggu...</p>
+                                        </div>
                                     </div>
                                 @endif
                             </div>
 
-                            {{-- ✅ Tombol Detail Laporan --}}
-                            <button @click="detailData = {
-                                type: 'report',
-                                item: '{{ $report->item->name }}',
-                                asset_code: '{{ $report->item->asset_code }}',
-                                date: '{{ $report->created_at->format('d M Y, H:i') }}',
-                                desc: '{{ $report->description }}',
-                                status: '{{ $report->status }}',
-                                feedback: '{{ $report->admin_note ?? 'Belum ada tanggapan teknisi.' }}',
-                                photo: '{{ $report->photo_path ? asset('storage/'.$report->photo_path) : null }}'
-                            }; modalDetail = true" class="w-full py-4 bg-slate-900 text-white rounded-2xl font-black text-[10px] uppercase tracking-widest hover:bg-blue-600 transition-all shadow-lg active:scale-95">
-                                Lihat Detail
-                            </button>
                         </div>
                         @empty
-                        <div class="col-span-full py-20 text-center">
-                            <div class="text-slate-200 text-6xl mb-4"><i class="bi bi-clipboard-check"></i></div>
-                            <p class="text-gray-400 font-bold uppercase text-[10px] tracking-widest">Tidak ada laporan kendala.</p>
+                        <div class="col-span-full py-20 text-center text-gray-400 italic">
+                            <i class="bi bi-clipboard-check text-4xl mb-4 block text-slate-200"></i>
+                            Tidak ada laporan kendala yang diajukan.
                         </div>
                         @endforelse
                     </div>
@@ -305,8 +338,7 @@
                     <textarea name="description" required rows="4" placeholder="Jelaskan detail kerusakan atau kendala yang dialami..." class="w-full px-6 py-5 bg-gray-50 border border-gray-100 rounded-2xl outline-none font-medium text-sm focus:ring-4 focus:ring-red-500/10 transition-all shadow-inner"></textarea>
                 </div>
 
-                {{-- INPUT FOTO BUKTI (DENGAN FILTER JPG/PNG) --}}
-                <div class="text-left leading-none" x-data="{ photoName: null, photoPreview: null }">
+                <div class="text-left leading-none">
                     <label class="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-3">Bukti Foto (Opsional)</label>
                     <div class="flex items-center gap-4">
                         <div class="w-20 h-20 rounded-2xl bg-gray-100 border border-dashed border-gray-300 flex items-center justify-center overflow-hidden relative">
@@ -384,6 +416,7 @@
                 {{-- B. TAMPILAN KHUSUS LAPORAN (REPORT) --}}
                 <template x-if="detailData.type === 'report'">
                     <div class="space-y-6">
+                        
                         {{-- ✅ MENAMPILKAN BUKTI FOTO (JIKA ADA) --}}
                         <template x-if="detailData.photo">
                             <div class="w-full h-56 bg-gray-100 rounded-[2rem] overflow-hidden border border-gray-200 relative group shadow-sm">
@@ -418,14 +451,9 @@
                             <p class="text-sm text-gray-700 italic font-medium leading-relaxed" x-text="detailData.desc"></p>
                         </div>
 
-                        <div class="p-6 bg-slate-900 rounded-[2rem] border border-slate-800 text-left shadow-xl relative overflow-hidden">
-                            <div class="relative z-10">
-                                <p class="text-[9px] font-black text-slate-500 uppercase tracking-widest mb-3">Tanggapan Teknisi:</p>
-                                <div class="flex gap-3">
-                                    <div class="w-1 bg-blue-500 rounded-full h-auto"></div>
-                                    <p class="text-sm text-slate-300 font-medium leading-relaxed" x-text="detailData.feedback"></p>
-                                </div>
-                            </div>
+                        <div class="p-6 bg-slate-900 rounded-[2rem] border border-slate-800 shadow-xl">
+                            <p class="text-[9px] font-black text-slate-500 uppercase mb-2 tracking-widest">Catatan Penanganan (Anda):</p>
+                            <p class="text-sm text-white font-medium" x-text="detailData.feedback || 'Belum ada catatan.'"></p>
                         </div>
                     </div>
                 </template>

@@ -294,7 +294,7 @@
         </main>
     </div>
 
-    {{-- 4. MODAL BOOKING ALAT --}}
+    {{-- 4. MODAL BOOKING ALAT (DENGAN ESTIMASI DURASI) --}}
     <div x-show="modalBooking" x-cloak class="fixed inset-0 z-[100] flex items-center justify-center p-4">
         <div class="absolute inset-0 bg-slate-900/60 backdrop-blur-md" @click="modalBooking = false"></div>
         <div x-show="modalBooking" x-transition.scale.95 class="relative w-full max-w-xl bg-white rounded-[3rem] shadow-2xl p-10 border border-white text-left overflow-y-auto max-h-[90vh] custom-scroll">
@@ -323,9 +323,39 @@
                             <label class="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-3">Jumlah Pinjam</label>
                             <input type="number" name="quantity" required min="1" placeholder="0" class="w-full px-6 py-5 bg-gray-50 border border-gray-100 rounded-2xl outline-none font-bold text-sm focus:ring-4 focus:ring-cyan-500/10 transition-all shadow-inner">
                         </div>
-                        <div class="text-left">
+                        
+                        {{-- ✅ FITUR BARU: ESTIMASI DURASI --}}
+                        <div class="text-left" x-data="{ mode: 'days' }">
                             <label class="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-3">Estimasi Durasi</label>
-                            <input type="text" readonly value="Hari Ini" class="w-full px-6 py-5 bg-gray-100 border border-gray-50 rounded-2xl font-black text-xs text-gray-400 cursor-not-allowed uppercase tracking-widest">
+                            
+                            {{-- Switcher --}}
+                            <div class="flex bg-gray-100 p-1 rounded-2xl mb-3">
+                                <button type="button" 
+                                        @click="mode = 'hours'"
+                                        :class="mode === 'hours' ? 'bg-white text-cyan-600 shadow-sm' : 'text-gray-400 hover:text-gray-600'"
+                                        class="flex-1 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all">
+                                    <i class="bi bi-clock-history mr-1"></i> Per Jam
+                                </button>
+                                <button type="button" 
+                                        @click="mode = 'days'"
+                                        :class="mode === 'days' ? 'bg-white text-cyan-600 shadow-sm' : 'text-gray-400 hover:text-gray-600'"
+                                        class="flex-1 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all">
+                                    <i class="bi bi-calendar-day mr-1"></i> Per Hari
+                                </button>
+                            </div>
+
+                            {{-- Hidden Input Unit --}}
+                            <input type="hidden" name="duration_unit" :value="mode">
+
+                            {{-- Input Amount --}}
+                            <div class="relative">
+                                <input type="number" name="duration_amount" min="1" required 
+                                       class="w-full px-6 py-5 bg-gray-50 border border-gray-100 rounded-2xl outline-none font-bold text-sm text-gray-700 focus:ring-4 focus:ring-cyan-500/10 transition-all placeholder:text-gray-300"
+                                       :placeholder="mode === 'hours' ? 'Berapa jam?' : 'Berapa hari?'">
+                                <span class="absolute right-6 top-1/2 -translate-y-1/2 text-[10px] font-black text-gray-400 uppercase tracking-widest" 
+                                      x-text="mode === 'hours' ? 'JAM' : 'HARI'">
+                                </span>
+                            </div>
                         </div>
                     </div>
 
@@ -343,10 +373,12 @@
         </div>
     </div>
 
-    {{-- 5. MODAL DETAIL STATUS & DENDA (DIPERBAIKI) --}}
+    {{-- 5. MODAL DETAIL STATUS & DENDA --}}
     <div x-show="modalStatus" x-cloak class="fixed inset-0 z-[120] flex items-center justify-center p-4">
         <div class="absolute inset-0 bg-slate-900/60 backdrop-blur-md" @click="modalStatus = false"></div>
         <div x-show="modalStatus" x-transition.scale.95 class="relative w-full max-w-lg bg-white rounded-[3rem] shadow-2xl p-10 border border-white flex flex-col max-h-[90vh] text-left leading-none overflow-y-auto custom-scroll">
+            
+            {{-- HEADER MODAL --}}
             <div class="mb-8 text-left leading-none">
                 <span class="text-[9px] font-black text-cyan-500 uppercase tracking-[0.2em] bg-cyan-50 px-2 py-1 rounded mb-2 inline-block">Detail Peminjaman</span>
                 <h3 class="text-3xl font-black text-gray-900 uppercase mt-2 tracking-tight leading-none" x-text="selectedRequest.barang"></h3>
@@ -354,11 +386,19 @@
             </div>
 
             <div class="space-y-6 text-left leading-none">
-                {{-- Info Status --}}
+                
+                {{-- INFO STATUS & TANGGAL --}}
                 <div class="p-6 bg-slate-50 rounded-[2rem] border border-slate-100 flex justify-between items-center">
                     <div class="flex flex-col">
                         <span class="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-1">Status Saat Ini</span>
-                        <span class="text-sm font-black text-slate-900 uppercase" x-text="selectedRequest.status === 'pending' ? 'MENUNGGU VERIFIKASI' : (selectedRequest.status === 'approved' ? 'SEDANG DIPINJAM' : (selectedRequest.status === 'returned' ? 'SUDAH DIKEMBALIKAN' : 'DITOLAK'))"></span>
+                        <span class="text-sm font-black uppercase" 
+                              :class="{
+                                  'text-orange-500': selectedRequest.status === 'pending',
+                                  'text-cyan-600': selectedRequest.status === 'approved',
+                                  'text-emerald-600': selectedRequest.status === 'returned',
+                                  'text-red-600': selectedRequest.status === 'rejected'
+                              }"
+                              x-text="selectedRequest.status === 'pending' ? 'MENUNGGU VERIFIKASI' : (selectedRequest.status === 'approved' ? 'SEDANG DIPINJAM' : (selectedRequest.status === 'returned' ? 'SUDAH DIKEMBALIKAN' : 'DITOLAK'))"></span>
                     </div>
                     <div class="flex flex-col text-right">
                         <span class="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-1">Tanggal Pinjam</span>
@@ -366,7 +406,7 @@
                     </div>
                 </div>
 
-                {{-- Detail Pengembalian (Jika Selesai) --}}
+                {{-- DETAIL PENGEMBALIAN --}}
                 <div x-show="selectedRequest.status === 'returned'" class="p-8 bg-emerald-50/50 rounded-[2.5rem] border border-emerald-100 text-left space-y-3">
                     <div class="flex justify-between items-center border-b border-emerald-100 pb-2">
                         <span class="text-[10px] font-bold text-emerald-600 uppercase">Tanggal Kembali</span>
@@ -388,7 +428,7 @@
                     </div>
                 </div>
 
-                {{-- Detail Denda & Kerusakan (Jika Ada) --}}
+                {{-- INFO DENDA --}}
                 <div x-show="selectedRequest.denda && selectedRequest.denda !== '0'" class="p-8 bg-red-50 rounded-[2.5rem] border border-red-100 text-left space-y-4">
                     <div class="flex items-center gap-2 text-red-600 font-black text-xs uppercase tracking-widest mb-1">
                         <i class="bi bi-exclamation-triangle-fill"></i> Laporan Insiden
@@ -415,7 +455,7 @@
                     </div>
                 </div>
 
-                {{-- Note & Feedback --}}
+                {{-- CATATAN & FEEDBACK --}}
                 <div class="space-y-4">
                     <div class="p-6 bg-cyan-50/50 rounded-[2rem] border border-cyan-100 text-left leading-relaxed">
                         <p class="text-[9px] font-black text-cyan-500 uppercase tracking-widest mb-2 leading-none">Alasan Peminjaman:</p>

@@ -185,21 +185,22 @@
                                             </span>
                                         </td>
                                         <td class="px-8 py-6 text-center">
-                                            <button @click="viewType = 'log'; selectedData = {
+                                            {{-- ✅ FIXED: Gunakan kutip SATU (') untuk atribut @click agar JSON kutip DUA (") aman --}}
+                                            <button type="button" @click='viewType = "log"; selectedData = {
                                                 item: @json($log->item->name),
                                                 user: @json($log->user->name),
-                                                dept: @json($log->user->department->name ?? 'N/A'),
-                                                date: '{{ $log->created_at->format('d M Y, H:i') }}',
-                                                return_date: '{{ $log->return_date ? \Carbon\Carbon::parse($log->return_date)->format('d M Y, H:i') : '-' }}',
-                                                status: '{{ $log->status }}',
-                                                condition: '{{ $log->return_condition ?? '-' }}',
-                                                rating: '{{ $log->rating ?? 0 }}',
+                                                dept: @json(optional($log->user->department)->name ?? "Non-Unit"),
+                                                date: "{{ $log->created_at->format("d M Y, H:i") }}",
+                                                return_date: "{{ $log->return_date ? \Carbon\Carbon::parse($log->return_date)->format("d M Y, H:i") : "-" }}",
+                                                status: "{{ $log->status }}",
+                                                condition: "{{ $log->return_condition ?? "-" }}",
+                                                rating: "{{ $log->rating ?? 0 }}",
                                                 admin_note: @json($log->admin_note),
-                                                denda: '{{ number_format($log->fine_amount, 0, ',', '.') }}',
-                                                lost_qty: '{{ $log->lost_quantity }}',
-                                                asset_code: '{{ $log->item->asset_code }}'
-                                            }; modalDetail = true" 
-                                            class="w-11 h-11 rounded-2xl bg-gray-50 text-gray-400 hover:bg-pink-600 hover:text-white transition-all mx-auto flex items-center justify-center shadow-sm">
+                                                denda: "{{ number_format($log->fine_amount, 0, ",", ".") }}",
+                                                lost_qty: "{{ $log->lost_quantity }}",
+                                                asset_code: @json($log->item->asset_code)
+                                            }; modalDetail = true'
+                                            class="w-11 h-11 rounded-2xl bg-gray-50 text-gray-400 hover:bg-pink-600 hover:text-white transition-all mx-auto flex items-center justify-center shadow-sm cursor-pointer">
                                                 <i class="bi bi-eye-fill"></i>
                                             </button>
                                         </td>
@@ -212,32 +213,31 @@
                         </div>
                     </div>
 
-                    {{-- SLIDE 2: DAFTAR KENDALA SISWA (EQUAL HEIGHT CARDS + PHOTO LOGIC) --}}
+                    {{-- SLIDE 2: DAFTAR KENDALA SISWA (EQUAL HEIGHT & CLICKABLE FIX) --}}
                     <div x-show="activeTab === 'masalah'" x-transition class="p-10 text-left">
                         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                             @forelse($incomingProblems as $problem)
                             {{-- CARD UTAMA --}}
-                            <div x-show="searchQuery === '' || '{{ strtolower($problem->user->name) }}'.includes(searchQuery.toLowerCase()) || '{{ strtolower($problem->item->name) }}'.includes(searchQuery.toLowerCase())"
-                                 class="p-8 rounded-[2.5rem] border border-gray-100 bg-gray-50/50 hover:border-pink-200 hover:bg-white hover:shadow-xl transition-all relative overflow-hidden group text-left flex flex-col justify-between h-full min-h-[320px]">
+                            <div x-show="searchQuery === '' || '{{ strtolower($problem->user->name) }}'.includes(searchQuery.toLowerCase())"
+                                 class="p-8 rounded-[2.5rem] border border-gray-100 bg-gray-50/50 hover:border-pink-200 hover:bg-white hover:shadow-xl transition-all relative overflow-hidden group text-left h-full flex flex-col justify-between min-h-[320px]">
                                 
-                                {{-- 1. Status Warna --}}
+                                {{-- 1. Status Color --}}
                                 <div class="absolute top-0 left-0 w-2 h-full {{ $problem->status === 'pending' ? 'bg-orange-500' : 'bg-emerald-500' }}"></div>
                                 
-                                {{-- 2. Tombol Detail (Fixed Top Right) --}}
+                                {{-- 2. Tombol Detail (FIX: Z-Index 20 & Single Quote Click Wrapper) --}}
                                 <div class="absolute top-6 right-6 z-20">
-                                    <button @click="viewType = 'report'; selectedData = {
-                                        id: '{{ $problem->id }}',
+                                    <button type="button" @click='viewType = "report"; selectedData = {
+                                        id: "{{ $problem->id }}",
                                         item: @json($problem->item->name),
                                         user: @json($problem->user->name),
-                                        dept: @json($problem->user->department->name ?? 'N/A'),
-                                        date: '{{ $problem->created_at->format('d M Y, H:i') }}',
-                                        status: '{{ $problem->status }}',
+                                        dept: @json(optional($problem->user->department)->name ?? "Non-Unit"),
+                                        date: "{{ $problem->created_at->format("d M Y, H:i") }}",
+                                        status: "{{ $problem->status }}",
                                         desc: @json($problem->description),
-                                        feedback: @json($problem->admin_note ?? 'Belum ada catatan.'),
-                                        asset_code: '{{ $problem->item->asset_code }}',
-                                        status_raw: '{{ $problem->status }}',
-                                        photo: '{{ $problem->photo_path ? asset('storage/'.$problem->photo_path) : null }}' {{-- ✅ FOTO DIKIRIM --}}
-                                    }; modalDetail = true"
+                                        feedback: @json($problem->admin_note ?? "Belum ada catatan."),
+                                        asset_code: @json($problem->item->asset_code),
+                                        photo: @json($problem->photo_path ? asset("storage/".$problem->photo_path) : null)
+                                    }; modalDetail = true' 
                                     class="w-10 h-10 rounded-full bg-white border border-gray-100 text-gray-400 hover:text-pink-600 hover:border-pink-100 flex items-center justify-center shadow-sm transition-all cursor-pointer">
                                         <i class="bi bi-eye-fill"></i>
                                     </button>
@@ -293,7 +293,7 @@
         </main>
     </div>
 
-    {{-- 👁️ MODAL DETAIL CERDAS (Dual Mode: Log & Report) --}}
+    {{-- 👁️ MODAL DETAIL CERDAS --}}
     <div x-show="modalDetail" x-cloak class="fixed inset-0 z-[100] flex items-center justify-center p-4 text-left">
         <div class="absolute inset-0 bg-slate-900/60 backdrop-blur-sm" @click="modalDetail = false"></div>
         <div x-show="modalDetail" x-transition.scale.95 class="relative w-full max-w-lg bg-white rounded-[3rem] shadow-2xl p-10 border border-white text-left leading-none overflow-y-auto max-h-[90vh] custom-scroll">
@@ -306,7 +306,7 @@
                     <h3 class="text-2xl font-black text-gray-900 uppercase font-jakarta leading-none text-left" x-text="selectedData.item"></h3>
                     <p class="text-[10px] font-bold text-gray-400 mt-2 uppercase" x-text="'Kode: ' + (selectedData.asset_code || '-')"></p>
                 </div>
-                <button @click="modalDetail = false" class="text-gray-400 hover:text-gray-600"><i class="bi bi-x-lg"></i></button>
+                <button type="button" @click="modalDetail = false" class="text-gray-400 hover:text-gray-600"><i class="bi bi-x-lg"></i></button>
             </div>
 
             <div class="space-y-6 text-left leading-none">
@@ -401,7 +401,7 @@
 
             </div>
 
-            <button @click="modalDetail = false" class="w-full mt-8 py-5 bg-slate-900 text-white rounded-[1.5rem] font-black text-[10px] uppercase tracking-[0.2em] shadow-xl hover:bg-pink-600 active:scale-95 transition-all">Tutup Detail</button>
+            <button type="button" @click="modalDetail = false" class="w-full mt-8 py-5 bg-slate-900 text-white rounded-[1.5rem] font-black text-[10px] uppercase tracking-[0.2em] shadow-xl hover:bg-pink-600 active:scale-95 transition-all">Tutup Detail</button>
         </div>
     </div>
 

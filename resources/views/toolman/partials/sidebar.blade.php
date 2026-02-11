@@ -9,13 +9,32 @@
     .sidebar-scroll::-webkit-scrollbar-track { background: transparent; }
     .sidebar-scroll::-webkit-scrollbar-thumb { background: #059669; border-radius: 10px; }
     .font-jakarta { font-family: 'Plus Jakarta Sans', sans-serif; }
+    
+    /* Efek Glow untuk FAB */
+    .fab-glow {
+        box-shadow: 0 10px 25px -5px rgba(16, 185, 129, 0.4), 0 8px 10px -6px rgba(16, 185, 129, 0.4);
+    }
 </style>
 
-{{-- SIDEBAR DESKTOP --}}
-<aside class="hidden md:flex w-72 bg-emerald-950 text-emerald-100 min-h-screen flex-col fixed inset-y-0 left-0 z-40 border-r border-emerald-900 shadow-2xl transition-all duration-300">
+{{-- 1. OVERLAY GELAP --}}
+<div x-show="sidebarOpen" 
+     x-transition:enter="transition opacity-linear duration-300"
+     x-transition:enter-start="opacity-0"
+     x-transition:enter-end="opacity-100"
+     x-transition:leave="transition opacity-linear duration-200"
+     x-transition:leave-start="opacity-100"
+     x-transition:leave-end="opacity-0"
+     @click="sidebarOpen = false" 
+     class="fixed inset-0 bg-black/60 backdrop-blur-sm z-40 md:hidden" x-cloak>
+</div>
+
+{{-- 2. SIDEBAR CONTAINER --}}
+<aside id="sidebar" 
+       :class="sidebarOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'"
+       class="fixed inset-y-0 left-0 z-50 w-72 bg-emerald-950 text-emerald-100 min-h-screen flex flex-col border-r border-emerald-900 shadow-2xl transition-transform duration-300 ease-in-out md:static md:flex">
     
-    {{-- Brand Logo --}}
-    <div class="h-20 flex items-center px-6 border-b border-emerald-900 bg-emerald-950/50 backdrop-blur-sm">
+    {{-- Brand Logo & Close Button --}}
+    <div class="h-20 flex items-center justify-between px-6 border-b border-emerald-900 bg-emerald-950/50 backdrop-blur-sm">
         <a href="{{ route('toolman.dashboard') }}" class="flex items-center gap-3 group text-left">
             <div class="w-10 h-10 rounded-xl bg-emerald-600 flex items-center justify-center text-white shadow-lg shadow-emerald-500/30 group-hover:scale-110 transition-transform duration-300">
                 <i class="bi bi-tools text-xl"></i>
@@ -25,6 +44,11 @@
                 <p class="text-[9px] text-emerald-500 uppercase font-bold tracking-widest mt-1">Toolman Panel</p>
             </div>
         </a>
+
+        {{-- TOMBOL CLOSE (Muncul di Mobile saat Sidebar Terbuka) --}}
+        <button @click="sidebarOpen = false" class="md:hidden text-emerald-400 hover:text-white transition-colors p-2">
+            <i class="bi bi-x-lg text-2xl"></i>
+        </button>
     </div>
 
     <div class="flex-1 overflow-y-auto sidebar-scroll py-8 px-4 space-y-10 text-left">
@@ -86,29 +110,11 @@
     </div>
 </aside>
 
-{{-- FOOTER MOBILE --}}
-<footer class="md:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-gray-100 shadow-[0_-4px_10px_-1px_rgba(0,0,0,0.05)] z-50">
-    <nav class="grid grid-cols-3 items-center h-16">
-        <a href="{{ route('toolman.dashboard') }}" class="flex flex-col items-center justify-center w-full h-full relative {{ request()->routeIs('toolman.dashboard') ? 'text-emerald-600' : 'text-gray-400' }}">
-            <i class="bi bi-grid-1x2-fill text-xl"></i>
-            <span class="text-[9px] font-black mt-1 uppercase">Home</span>
-            @if(request()->routeIs('toolman.dashboard'))
-                <div class="absolute top-0 w-8 h-1 bg-emerald-600 rounded-b-full"></div>
-            @endif
-        </a>
-        <a href="{{ route('toolman.request') }}" class="flex flex-col items-center justify-center w-full h-full relative {{ request()->routeIs('toolman.request') ? 'text-emerald-600' : 'text-gray-400' }}">
-            <i class="bi bi-clipboard2-check-fill text-xl"></i>
-            <span class="text-[9px] font-black mt-1 uppercase">Request</span>
-            @if(request()->routeIs('toolman.request'))
-                <div class="absolute top-0 w-8 h-1 bg-emerald-600 rounded-b-full"></div>
-            @endif
-        </a>
-        <a href="{{ route('toolman.laporan') }}" class="flex flex-col items-center justify-center w-full h-full relative {{ request()->routeIs('toolman.laporan') ? 'text-emerald-600' : 'text-gray-400' }}">
-            <i class="bi bi-file-earmark-text-fill text-xl"></i>
-            <span class="text-[9px] font-black mt-1 uppercase">Laporan</span>
-            @if(request()->routeIs('toolman.laporan'))
-                <div class="absolute top-0 w-8 h-1 bg-emerald-600 rounded-b-full"></div>
-            @endif
-        </a>
-    </nav>
-</footer>
+{{-- 3. FLOATING ACTION BUTTON (Pengganti Navigasi Bawah) --}}
+{{-- Muncul hanya di mobile (md:hidden) --}}
+<div class="md:hidden fixed bottom-6 right-6 z-40">
+    <button @click="sidebarOpen = true" 
+            class="w-14 h-14 bg-emerald-600 text-white rounded-2xl fab-glow flex items-center justify-center active:scale-90 transition-all duration-200 border border-emerald-400/30">
+        <i class="bi bi-grid-fill text-2xl"></i>
+    </button>
+</div>

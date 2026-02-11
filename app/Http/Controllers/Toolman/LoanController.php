@@ -7,7 +7,9 @@ use App\Models\Loan;
 use App\Models\Item;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB; // ✅ Wajib buat transaksi database aman
 use App\Notifications\SystemNotification;
+use Carbon\Carbon;
 
 class LoanController extends Controller
 {
@@ -17,10 +19,13 @@ class LoanController extends Controller
     public function index()
     {
         $user = Auth::user();
+        
+        // Ambil ID jurusan yang dipegang oleh Toolman ini
         $managedDeptIds = $user->assignedDepartments->pluck('id');
 
         $requests = Loan::with(['user.department', 'item.category'])
             ->whereHas('user', function($query) use ($managedDeptIds) {
+                // Filter request hanya dari siswa jurusan yang diampu toolman
                 $query->whereIn('department_id', $managedDeptIds);
             })
             ->latest()
@@ -37,12 +42,14 @@ class LoanController extends Controller
         $user = Auth::user();
         $managedDeptIds = $user->assignedDepartments->pluck('id');
 
+        // Cari Loan berdasarkan ID dan Otoritas
         $loan = Loan::whereHas('user', function($query) use ($managedDeptIds) {
             $query->whereIn('department_id', $managedDeptIds);
         })->findOrFail($id);
 
         $item = Item::findOrFail($loan->item_id);
 
+        // Validasi Stok Fisik
         $request->validate([
             'approved_quantity' => 'required|numeric|min:1|max:' . $item->stock,
         ], [
@@ -51,22 +58,29 @@ class LoanController extends Controller
 
         $finalQty = $request->approved_quantity;
 
-        // Kurangi stok barang
-        $item->decrement('stock', $finalQty);
+        // ✅ GUNAKAN TRANSAKSI DATABASE (Agar Stok & Status Sinkron)
+        DB::transaction(function () use ($loan, $item, $finalQty, $request) {
+            // 1. Kurangi stok barang
+            $item->decrement('stock', $finalQty);
 
-        // Update status pinjaman
-        $loan->update([
-            'quantity' => $finalQty, 
-            'status' => 'approved',
-            'loan_date' => now(),
-            'admin_note' => $request->admin_note ?? 'Permintaan disetujui. Silakan ambil barang di gudang.'
-        ]);
+            // 2. Update status pinjaman
+            // Catatan: return_date sudah dihitung di controller siswa, jadi kita ikuti itu.
+            $loan->update([
+                'quantity'   => $finalQty, 
+                'status'     => 'approved',
+                'loan_date'  => now(),
+                'admin_note' => $request->admin_note ?? 'Permintaan disetujui. Silakan ambil barang di gudang.'
+            ]);
+        });
+
+        // Format tanggal agar enak dibaca di notifikasi
+        $deadlineInfo = Carbon::parse($loan->return_date)->translatedFormat('d F Y H:i');
 
         // Notifikasi ke Siswa
         $loan->user->notify(new SystemNotification(
             'Peminjaman Disetujui',
-            'Permintaan alat ' . $item->name . ' telah disetujui. Silakan ambil di ruang alat.',
-            route('siswa.request'),
+            'Alat ' . $item->name . ' siap diambil. Wajib dikembalikan sebelum: ' . $deadlineInfo,
+            route('siswa.request'), // Link ke halaman siswa
             'success'
         ));
 
@@ -92,7 +106,7 @@ class LoanController extends Controller
         ]);
 
         $loan->update([
-            'status' => 'rejected',
+            'status'     => 'rejected',
             'admin_note' => $request->admin_note
         ]);
 
@@ -121,45 +135,47 @@ class LoanController extends Controller
 
         $item = Item::findOrFail($loan->item_id);
 
-        // ✅ Validasi Input
+        // Validasi Input Pengembalian
         $request->validate([
             'return_condition' => 'required|in:aman,rusak,hilang',
             'rating'           => 'required|integer|min:1|max:5',
             'admin_note'       => 'nullable|string|max:500',
             'fine_amount'      => 'nullable|numeric|min:0',
-            'lost_quantity'    => 'nullable|integer|min:0|max:' . $loan->quantity, // Gak boleh input rusak lebih dari yg dipinjam
+            'lost_quantity'    => 'nullable|integer|min:0|max:' . $loan->quantity,
             'return_note'      => 'nullable|string|max:255'
         ]);
 
         $lostQty = $request->lost_quantity ?? 0;
         $fineAmount = $request->fine_amount ?? 0;
 
-        // 1. LOGIC PENGEMBALIAN STOK
-        // Stok yang kembali ke rak "Ready" = Total Pinjam - (Rusak + Hilang)
-        // Barang rusak/hilang dianggap tidak kembali ke stok "Ready" (perlu penanganan terpisah/write-off)
-        $restoredStock = $loan->quantity - $lostQty;
+        // ✅ GUNAKAN TRANSAKSI DATABASE
+        DB::transaction(function () use ($loan, $item, $request, $lostQty, $fineAmount) {
+            // 1. LOGIC PENGEMBALIAN STOK
+            // Stok kembali = Total Pinjam - (Rusak + Hilang)
+            $restoredStock = $loan->quantity - $lostQty;
 
-        if ($restoredStock > 0) {
-            $item->increment('stock', $restoredStock);
-        }
+            if ($restoredStock > 0) {
+                $item->increment('stock', $restoredStock);
+            }
 
-        // 2. Simpan Data Pengembalian
-        $loan->update([
-            'status'           => 'returned',
-            'return_date'      => now(),
-            'return_condition' => $request->return_condition,
-            'rating'           => $request->rating,
-            'fine_amount'      => $fineAmount,
-            'lost_quantity'    => $lostQty,
-            'fine_status'      => ($fineAmount > 0) ? 'unpaid' : 'paid', // Kalau ada denda, status UNPAID. Kalau 0, otomatis PAID.
-            'return_note'      => $request->return_note,
-            'admin_note'       => $request->admin_note ?? 'Barang kembali dengan kondisi ' . strtoupper($request->return_condition)
-        ]);
+            // 2. Simpan Data Pengembalian
+            $loan->update([
+                'status'           => 'returned',
+                'return_date'      => now(), // Waktu aktual pengembalian
+                'return_condition' => $request->return_condition,
+                'rating'           => $request->rating,
+                'fine_amount'      => $fineAmount,
+                'lost_quantity'    => $lostQty,
+                'fine_status'      => ($fineAmount > 0) ? 'unpaid' : 'paid',
+                'return_note'      => $request->return_note,
+                'admin_note'       => $request->admin_note ?? 'Barang kembali dengan kondisi ' . strtoupper($request->return_condition)
+            ]);
+        });
 
         // 3. Notifikasi
         $notifMessage = 'Pengembalian ' . $item->name . ' selesai.';
         if ($fineAmount > 0) {
-            $notifMessage .= ' Terdapat denda Rp ' . number_format($fineAmount) . ' (Status: Belum Lunas).';
+            $notifMessage .= ' Terdapat denda Rp ' . number_format($fineAmount, 0, ',', '.') . ' (Status: Belum Lunas).';
         }
 
         $loan->user->notify(new SystemNotification(
@@ -173,7 +189,7 @@ class LoanController extends Controller
     }
 
     /**
-     * ✅ FITUR BARU: Tandai Denda Sebagai Lunas (Paid).
+     * Tandai Denda Sebagai Lunas (Paid).
      */
     public function markAsPaid($id)
     {

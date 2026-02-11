@@ -11,6 +11,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Notifications\SystemNotification;
 use Illuminate\Support\Facades\Notification;
+use Carbon\Carbon; // ✅ Penting buat manipulasi tanggal/jam
 
 class LoanController extends Controller
 {
@@ -23,7 +24,6 @@ class LoanController extends Controller
         $user = Auth::user();
         
         // 1. Dapatkan ID Jurusan dari Kelas Siswa
-        // User (Student) -> ClassRoom -> Department
         $userDeptId = $user->classRoom ? $user->classRoom->department_id : null;
 
         // 2. Ambil ID Kategori yang relevan:
@@ -60,22 +60,24 @@ class LoanController extends Controller
     }
 
     /**
-     * Simpan Request Peminjaman Baru
+     * Simpan Request Peminjaman Baru (Dengan Estimasi Durasi)
      */
     public function store(Request $request)
     {
+        // 1. Validasi Input
         $request->validate([
-            'item_id'  => 'required|exists:items,id',
-            'quantity' => 'required|numeric|min:1',
-            'reason'   => 'required|string|max:500',
+            'item_id'         => 'required|exists:items,id',
+            'quantity'        => 'required|numeric|min:1',
+            'reason'          => 'required|string|max:500',
+            'duration_amount' => 'required|integer|min:1',      // ✅ Angka durasi
+            'duration_unit'   => 'required|in:hours,days',        // ✅ Satuan (jam/hari)
         ]);
 
         $item = Item::findOrFail($request->item_id);
         $user = Auth::user();
         $userDeptId = $user->classRoom ? $user->classRoom->department_id : null;
 
-        // VALIDASI OTORITAS (Server Side Security):
-        // Cek apakah barang ini milik kategori jurusan siswa ATAU kategori umum
+        // 2. Validasi Otoritas Barang (Security Check)
         $isAllowed = Category::where('id', $item->category_id)
             ->where(function($query) use ($userDeptId) {
                 $query->whereHas('departments', function($q) use ($userDeptId) {
@@ -83,43 +85,57 @@ class LoanController extends Controller
                         $q->where('departments.id', $userDeptId);
                     }
                 })
-                ->orWhereDoesntHave('departments'); // ✅ Izinkan juga jika kategori umum
+                ->orWhereDoesntHave('departments'); // Izinkan kategori umum
             })->exists();
 
         if (!$isAllowed) {
-            return redirect()->back()->with('error', 'Akses Ditolak! Barang ini tidak tersedia untuk jurusan kelas Anda.');
+            return redirect()->back()->with('error', 'Akses Ditolak! Barang ini tidak tersedia untuk jurusan Anda.');
         }
 
-        // Cek stok apakah cukup
+        // 3. Cek Stok Barang
         if ($request->quantity > $item->stock) {
             return redirect()->back()->with('error', 'Gagal! Stok barang tidak mencukupi.');
         }
 
-        // Simpan Request
+        // 4. Hitung Tanggal Pengembalian Otomatis (Estimasi)
+        $returnDate = now(); // Mulai dari sekarang
+
+        if ($request->duration_unit === 'hours') {
+            // ✅ FIX: Paksa (cast) durasi_amount menjadi (int) agar tidak TypeError
+            $returnDate->addHours((int)$request->duration_amount);
+        } else {
+            // ✅ FIX: Paksa (cast) durasi_amount menjadi (int) dan set ke akhir hari
+            $returnDate->addDays((int)$request->duration_amount)->endOfDay();
+        }
+
+        // 5. Simpan Data Peminjaman
         Loan::create([
-            'user_id'  => Auth::id(),
-            'item_id'  => $request->item_id,
-            'quantity' => $request->quantity,
-            'reason'   => $request->reason,
-            'status'   => 'pending',
+            'user_id'     => Auth::id(),
+            'item_id'     => $request->item_id,
+            'quantity'    => $request->quantity,
+            'reason'      => $request->reason,
+            'status'      => 'pending',
+            'return_date' => $returnDate, // ✅ Simpan hasil perhitungan tanggal kembali
         ]);
 
-        // LOGIC NOTIFIKASI KE TOOLMAN
+        // 6. Notifikasi ke Toolman
         try {
-            // Kirim notifikasi ke Toolman yang bertugas di jurusan yang sama (atau semua toolman)
             $toolmen = User::where('role', 'toolman')->get();
             
-            $notifTitle = 'Request Siswa Baru';
-            $notifMessage = $user->name . ' (' . ($user->classRoom->name ?? 'No Class') . ') meminjam: ' . $item->name . ' (' . $request->quantity . ' unit).';
+            // Format pesan notifikasi agar Toolman tau durasinya
+            $durasiText = $request->duration_amount . ' ' . ($request->duration_unit === 'hours' ? 'Jam' : 'Hari');
+            
+            $notifTitle = 'Request Peminjaman Baru';
+            $notifMessage = $user->name . ' ingin meminjam ' . $item->name . ' (' . $request->quantity . ' unit) selama ' . $durasiText . '.';
             
             Notification::send($toolmen, new SystemNotification(
                 $notifTitle,
                 $notifMessage,
-                route('toolman.request'), // Arahkan toolman ke halaman request mereka
+                route('toolman.request'), // Arahkan toolman ke halaman request
                 'info'
             ));
         } catch (\Exception $e) {
-            // Silent fail notif jika ada error mailer/driver
+            // Silent fail notif
         }
 
         return redirect()->back()->with('success', 'Permintaan pinjam berhasil dikirim. Menunggu persetujuan Toolman.');

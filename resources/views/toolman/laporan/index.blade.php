@@ -22,11 +22,11 @@
 <body class="antialiased flex h-screen w-full overflow-hidden text-left font-jakarta" 
       x-data="{ 
         sidebarOpen: false, 
-        activeTab: 'sirkulasi',
+        activeTab: 'sirkulasi', 
         searchQuery: '', 
-        modalDetail: false,
+        modalDetail: false, 
         modalFinish: false, 
-        viewType: '', // 'log' atau 'report'
+        viewType: '', 
         
         // Data Dinamis untuk Modal
         selectedData: { 
@@ -63,7 +63,6 @@
                         <p class="text-sm font-bold text-emerald-600 mt-3 uppercase tracking-widest leading-none border-l-4 border-emerald-600 pl-4">Periode Data: {{ $summary['period'] }}</p>
                     </div>
 
-                    {{-- Form Filter & Search --}}
                     <div class="bg-white p-8 rounded-[2.5rem] border border-gray-100 shadow-sm leading-none">
                         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 xl:grid-cols-5 gap-6 items-end">
                             
@@ -96,7 +95,6 @@
                                 </div>
                             </div>
 
-                            {{-- Export Button --}}
                             <a href="{{ route('toolman.laporan.export', request()->all()) }}" 
                                class="bg-emerald-600 text-white rounded-2xl py-3.5 px-4 font-black text-[10px] uppercase tracking-widest hover:bg-emerald-700 transition-all shadow-xl shadow-emerald-100 active:scale-95 flex items-center justify-center gap-2">
                                 <i class="bi bi-file-earmark-pdf-fill"></i> Cetak PDF
@@ -184,20 +182,20 @@
                                             </span>
                                         </td>
                                         <td class="px-8 py-6 text-center">
-                                            <button @click="viewType = 'log'; selectedData = {
-                                                item: '{{ $log->item->name }}',
-                                                user: '{{ $log->user->name }}',
-                                                dept: '{{ $log->user->department->name ?? 'N/A' }}',
-                                                date: '{{ $log->created_at->format('d M Y, H:i') }}',
-                                                return_date: '{{ $log->return_date ? \Carbon\Carbon::parse($log->return_date)->format('d M Y, H:i') : '-' }}',
-                                                status: '{{ $log->status }}',
-                                                condition: '{{ $log->return_condition ?? '-' }}',
-                                                rating: '{{ $log->rating ?? 0 }}',
-                                                admin_note: '{{ $log->admin_note }}',
-                                                denda: '{{ number_format($log->fine_amount, 0, ',', '.') }}',
-                                                lost_qty: '{{ $log->lost_quantity }}',
-                                                asset_code: '{{ $log->item->asset_code }}'
-                                            }; modalDetail = true" 
+                                            <button type="button" @click='viewType = "log"; selectedData = {
+                                                item: @json($log->item->name),
+                                                user: @json($log->user->name),
+                                                dept: @json($log->user->department->name ?? "N/A"),
+                                                date: "{{ $log->created_at->format("d M Y, H:i") }}",
+                                                return_date: "{{ $log->return_date ? \Carbon\Carbon::parse($log->return_date)->format("d M Y, H:i") : "-" }}",
+                                                status: "{{ $log->status }}",
+                                                condition: "{{ $log->return_condition ?? "-" }}",
+                                                rating: "{{ $log->rating ?? 0 }}",
+                                                admin_note: @json($log->admin_note),
+                                                denda: "{{ number_format($log->fine_amount, 0, ",", ".") }}",
+                                                lost_qty: "{{ $log->lost_quantity }}",
+                                                asset_code: @json($log->item->asset_code)
+                                            }; modalDetail = true' 
                                             class="w-10 h-10 rounded-xl bg-gray-50 text-gray-400 hover:bg-emerald-600 hover:text-white transition-all mx-auto flex items-center justify-center shadow-sm">
                                                 <i class="bi bi-eye-fill"></i>
                                             </button>
@@ -211,72 +209,81 @@
                         </div>
                     </div>
 
-                    {{-- SLIDE 2: DAFTAR KENDALA SISWA (UPDATED ONE CLICK ACTION) --}}
+                    {{-- SLIDE 2: DAFTAR KENDALA SISWA (EQUAL HEIGHT & CLICKABLE FIX) --}}
                     <div x-show="activeTab === 'kendala'" x-transition class="p-10 text-left">
                         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                             @forelse($incomingProblems as $problem)
+                            {{-- CARD UTAMA --}}
                             <div x-show="searchQuery === '' || '{{ strtolower($problem->user->name) }}'.includes(searchQuery.toLowerCase()) || '{{ strtolower($problem->item->name) }}'.includes(searchQuery.toLowerCase())"
-                                 class="p-8 rounded-[2.5rem] border border-gray-100 bg-gray-50/50 hover:border-emerald-200 hover:bg-white hover:shadow-xl transition-all relative overflow-hidden group text-left flex flex-col justify-between h-full">
+                                 class="p-8 rounded-[2.5rem] border border-gray-100 bg-gray-50/50 hover:border-emerald-200 hover:bg-white hover:shadow-xl transition-all relative overflow-hidden group text-left h-full flex flex-col justify-between min-h-[320px]">
                                 
+                                {{-- 1. Status Color --}}
                                 <div class="absolute top-0 left-0 w-2 h-full {{ $problem->status === 'fixed' ? 'bg-emerald-500' : ($problem->status === 'checked' ? 'bg-blue-500' : 'bg-orange-500') }}"></div>
                                 
-                                {{-- Tombol Detail (View Foto & Info) --}}
-                                <button @click="viewType = 'report'; selectedData = {
-                                    id: '{{ $problem->id }}',
-                                    item: '{{ $problem->item->name }}',
-                                    user: '{{ $problem->user->name }}',
-                                    dept: '{{ $problem->user->department->name ?? 'N/A' }}',
-                                    date: '{{ $problem->created_at->format('d M Y, H:i') }}',
-                                    status: '{{ $problem->status }}',
-                                    desc: '{{ $problem->description }}',
-                                    feedback: '{{ $problem->admin_note ?? 'Belum ada catatan.' }}',
-                                    asset_code: '{{ $problem->item->asset_code }}',
-                                    photo: '{{ $problem->photo_path ? asset('storage/'.$problem->photo_path) : null }}' {{-- ✅ FOTO DIKIRIM --}}
-                                }; modalDetail = true"
-                                class="absolute top-6 right-6 w-10 h-10 rounded-full bg-white border border-gray-100 text-gray-400 hover:text-emerald-600 hover:border-emerald-100 flex items-center justify-center shadow-sm transition-all z-10">
-                                    <i class="bi bi-eye-fill"></i>
-                                </button>
+                                {{-- 2. Tombol Detail (FIX: Z-Index 20 & Safe Quotes) --}}
+                                <div class="absolute top-6 right-6 z-20">
+                                    <button type="button" @click='viewType = "report"; selectedData = {
+                                        id: "{{ $problem->id }}",
+                                        item: @json($problem->item->name),
+                                        user: @json($problem->user->name),
+                                        dept: @json($problem->user->department->name ?? "N/A"),
+                                        date: "{{ $problem->created_at->format("d M Y, H:i") }}",
+                                        status: "{{ $problem->status }}",
+                                        desc: @json($problem->description),
+                                        feedback: @json($problem->admin_note ?? "Belum ada catatan."),
+                                        asset_code: @json($problem->item->asset_code),
+                                        status_raw: "{{ $problem->status }}",
+                                        photo: @json($problem->photo_path ? asset("storage/".$problem->photo_path) : null)
+                                    }; modalDetail = true'
+                                    class="w-10 h-10 rounded-full bg-white border border-gray-100 text-gray-400 hover:text-emerald-600 hover:border-emerald-100 flex items-center justify-center shadow-sm transition-all cursor-pointer">
+                                        <i class="bi bi-eye-fill"></i>
+                                    </button>
+                                </div>
 
-                                <div>
-                                    <div class="mb-4 pr-12">
-                                        <p class="text-[9px] font-black text-gray-400 uppercase tracking-widest mb-2">{{ $problem->created_at->diffForHumans() }}</p>
-                                        <h4 class="text-lg font-black text-slate-900 uppercase leading-tight truncate w-40">{{ $problem->item->name }}</h4>
-                                        <p class="text-[10px] font-black text-emerald-500 mt-1 uppercase">{{ $problem->user->name }}</p>
+                                {{-- 3. Top Content --}}
+                                <div class="flex-1 pr-12 mb-4 relative z-10">
+                                    <div class="mb-4">
+                                        <p class="text-[9px] font-black text-gray-400 uppercase tracking-widest mb-2 leading-none text-left">{{ $problem->created_at->diffForHumans() }}</p>
+                                        <h4 class="text-lg font-black text-slate-900 uppercase leading-tight text-left truncate w-full">{{ $problem->item->name }}</h4>
+                                        <p class="text-[10px] font-black text-emerald-500 mt-1 uppercase text-left">{{ $problem->user->name }} ({{ $problem->user->department->name ?? 'UNIT' }})</p>
                                     </div>
 
-                                    <div class="p-6 bg-white rounded-3xl border border-gray-100 mb-6 shadow-inner text-left leading-none h-24 overflow-hidden relative">
-                                        <p class="text-[9px] font-black text-red-500 uppercase mb-3 tracking-widest">Keluhan:</p>
-                                        <p class="text-xs text-gray-600 font-medium italic leading-relaxed line-clamp-2">"{{ $problem->description }}"</p>
+                                    <div class="p-6 bg-white rounded-3xl border border-gray-100 mb-6 shadow-inner text-left leading-none h-28 overflow-hidden relative">
+                                        <p class="text-[9px] font-black text-red-500 uppercase mb-3 tracking-widest leading-none text-left">Keluhan:</p>
+                                        <p class="text-xs text-gray-600 font-medium italic leading-relaxed text-left line-clamp-3">"{{ $problem->description }}"</p>
                                         
                                         {{-- ✅ INDIKATOR FOTO --}}
                                         @if($problem->photo_path)
-                                            <div class="absolute bottom-3 right-3 text-red-400 text-xs flex items-center gap-1 bg-red-50 px-2 py-1 rounded-lg">
+                                            <div class="absolute bottom-3 right-3 text-red-400 text-xs flex items-center gap-1 bg-red-50 px-2 py-1 rounded-lg border border-red-50">
                                                 <i class="bi bi-camera-fill"></i> <span class="text-[8px] font-bold uppercase">Ada Bukti</span>
                                             </div>
                                         @endif
+                                        <div class="absolute bottom-0 left-0 w-full h-6 bg-gradient-to-t from-white to-transparent"></div>
                                     </div>
                                 </div>
                                 
-                                {{-- ✅ ONE CLICK ACTION -> OPEN MODAL FORM --}}
-                                @if($problem->status !== 'fixed')
-                                    <button @click="selectedData = {
-                                        id: '{{ $problem->id }}',
-                                        item: '{{ $problem->item->name }}',
-                                        user: '{{ $problem->user->name }}'
-                                    }; modalFinish = true"
-                                    class="w-full py-4 bg-slate-900 hover:bg-emerald-600 text-white rounded-2xl font-black text-[10px] uppercase tracking-widest shadow-lg transition-all active:scale-95 flex items-center justify-center gap-2">
-                                        <i class="bi bi-check-circle-fill"></i> Selesai Perbaikan
-                                    </button>
-                                @else
-                                    <div class="w-full py-4 bg-emerald-100 text-emerald-700 rounded-2xl font-black text-[10px] uppercase tracking-widest flex items-center justify-center gap-2 border border-emerald-200">
-                                        <i class="bi bi-check-all text-lg"></i> Kasus Selesai
-                                    </div>
-                                @endif
+                                {{-- 4. Bottom Action --}}
+                                <div class="mt-auto relative z-10">
+                                    @if($problem->status !== 'fixed')
+                                        <button type="button" @click='selectedData = {
+                                            id: "{{ $problem->id }}",
+                                            item: @json($problem->item->name),
+                                            user: @json($problem->user->name)
+                                        }; modalFinish = true'
+                                        class="w-full py-4 bg-slate-900 hover:bg-emerald-600 text-white rounded-2xl font-black text-[10px] uppercase tracking-widest shadow-lg transition-all active:scale-95 flex items-center justify-center gap-2">
+                                            <i class="bi bi-check-circle-fill"></i> Selesai Perbaikan
+                                        </button>
+                                    @else
+                                        <div class="w-full py-4 bg-emerald-100 text-emerald-700 rounded-2xl font-black text-[10px] uppercase tracking-widest flex items-center justify-center gap-2 border border-emerald-200 cursor-not-allowed opacity-80">
+                                            <i class="bi bi-check-all text-lg"></i> Kasus Selesai
+                                        </div>
+                                    @endif
+                                </div>
+
                             </div>
                             @empty
-                            <div class="col-span-full py-20 text-center leading-none">
-                                <i class="bi bi-shield-check text-5xl text-emerald-200 mb-4 block"></i>
-                                <p class="text-gray-400 font-bold uppercase text-[10px] tracking-[0.3em]">Aman! Tidak ada laporan kendala.</p>
+                            <div class="col-span-full py-20 text-center leading-none text-gray-400 italic">
+                                Belum ada laporan masuk.
                             </div>
                             @endforelse
                         </div>
@@ -286,7 +293,7 @@
         </main>
     </div>
 
-    {{-- ✅ MODAL KONFIRMASI SELESAI (DENGAN CATATAN) --}}
+    {{-- ✅ MODAL KONFIRMASI SELESAI --}}
     <div x-show="modalFinish" x-cloak class="fixed inset-0 z-[120] flex items-center justify-center p-4">
         <div class="absolute inset-0 bg-slate-900/60 backdrop-blur-sm" @click="modalFinish = false"></div>
         <div x-show="modalFinish" x-transition.scale.95 class="relative w-full max-w-md bg-white rounded-[3rem] shadow-2xl p-8 border border-white text-left overflow-hidden">
@@ -330,8 +337,7 @@
             </div>
 
             <div class="space-y-6 text-left leading-none">
-                
-                {{-- INFO UMUM USER (MUNCUL DI KEDUA TIPE) --}}
+                {{-- Info Umum User --}}
                 <div class="flex items-center gap-4 p-4 bg-slate-50 rounded-2xl border border-slate-100">
                     <div class="w-10 h-10 rounded-xl bg-white flex items-center justify-center shadow-sm text-slate-600"><i class="bi bi-person-badge"></i></div>
                     <div>
@@ -340,11 +346,46 @@
                     </div>
                 </div>
 
+                {{-- TAMPILAN KHUSUS: LOG SIRKULASI --}}
+                <template x-if="viewType === 'log'">
+                    <div class="space-y-4">
+                        <div class="grid grid-cols-2 gap-4">
+                            <div class="p-5 bg-emerald-50 rounded-2xl border border-emerald-100">
+                                <p class="text-[9px] font-bold text-emerald-600 uppercase mb-1">Status</p>
+                                <p class="text-sm font-black text-emerald-800 uppercase" x-text="selectedData.status"></p>
+                            </div>
+                            <div class="p-5 bg-slate-50 rounded-2xl border border-slate-100">
+                                <p class="text-[9px] font-bold text-slate-500 uppercase mb-1">Rating</p>
+                                <div class="flex text-orange-400 text-xs">
+                                    <template x-for="i in parseInt(selectedData.rating)"><i class="bi bi-star-fill"></i></template>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="p-6 rounded-2xl border border-slate-100 bg-white">
+                            <div class="flex justify-between border-b border-slate-50 pb-2 mb-2">
+                                <span class="text-[10px] font-bold text-slate-400 uppercase">Pinjam</span>
+                                <span class="text-xs font-black text-slate-700" x-text="selectedData.date"></span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-[10px] font-bold text-slate-400 uppercase">Kembali</span>
+                                <span class="text-xs font-black text-slate-700" x-text="selectedData.return_date"></span>
+                            </div>
+                        </div>
+
+                        {{-- Denda Section --}}
+                        <div x-show="selectedData.denda !== '0'" class="p-6 bg-red-50 rounded-2xl border border-red-100">
+                            <p class="text-[9px] font-black text-red-500 uppercase mb-2">Catatan Insiden</p>
+                            <p class="text-lg font-black text-red-600" x-text="'Denda: Rp ' + selectedData.denda"></p>
+                            <p class="text-xs text-red-400 mt-1 font-bold italic" x-text="selectedData.admin_note"></p>
+                        </div>
+                    </div>
+                </template>
+
                 {{-- TAMPILAN KHUSUS: LAPORAN KENDALA --}}
                 <template x-if="viewType === 'report'">
                     <div class="space-y-6">
-                        
-                        {{-- ✅ MENAMPILKAN BUKTI FOTO DI MODAL --}}
+                        {{-- Foto Bukti --}}
                         <template x-if="selectedData.photo">
                             <div class="w-full h-56 bg-gray-100 rounded-[2rem] overflow-hidden border border-gray-200 relative group shadow-sm">
                                 <img :src="selectedData.photo" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105">
@@ -353,7 +394,6 @@
                                 </div>
                             </div>
                         </template>
-                        {{-- Placeholder Jika Tidak Ada Foto --}}
                         <template x-if="!selectedData.photo">
                             <div class="w-full h-24 bg-slate-50 rounded-2xl flex items-center justify-center border border-dashed border-slate-200 text-slate-400">
                                 <p class="text-[10px] font-bold uppercase tracking-widest"><i class="bi bi-image-alt mr-2"></i> Tidak ada foto bukti</p>
@@ -372,38 +412,6 @@
                     </div>
                 </template>
 
-                {{-- TAMPILAN KHUSUS: LOG SIRKULASI --}}
-                <template x-if="viewType === 'log'">
-                    <div class="space-y-4">
-                        <div class="grid grid-cols-2 gap-4">
-                            <div class="p-5 bg-emerald-50 rounded-2xl border border-emerald-100">
-                                <p class="text-[9px] font-bold text-emerald-600 uppercase mb-1">Status</p>
-                                <p class="text-sm font-black text-emerald-800 uppercase" x-text="selectedData.status"></p>
-                            </div>
-                            <div class="p-5 bg-slate-50 rounded-2xl border border-slate-100">
-                                <p class="text-[9px] font-bold text-slate-500 uppercase mb-1">Rating</p>
-                                <div class="flex text-orange-400 text-xs">
-                                    <template x-for="i in parseInt(selectedData.rating)"><i class="bi bi-star-fill"></i></template>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="p-6 rounded-2xl border border-slate-100 bg-white">
-                            <div class="flex justify-between border-b border-slate-50 pb-2 mb-2">
-                                <span class="text-[10px] font-bold text-slate-400 uppercase">Pinjam</span>
-                                <span class="text-xs font-black text-slate-700" x-text="selectedData.date"></span>
-                            </div>
-                            <div class="flex justify-between">
-                                <span class="text-[10px] font-bold text-slate-400 uppercase">Kembali</span>
-                                <span class="text-xs font-black text-slate-700" x-text="selectedData.return_date"></span>
-                            </div>
-                        </div>
-                        <div x-show="selectedData.denda !== '0'" class="p-6 bg-red-50 rounded-2xl border border-red-100">
-                            <p class="text-[9px] font-black text-red-500 uppercase mb-2">Catatan Insiden</p>
-                            <p class="text-lg font-black text-red-600" x-text="'Denda: Rp ' + selectedData.denda"></p>
-                            <p class="text-xs text-red-400 mt-1 font-bold italic" x-text="selectedData.admin_note"></p>
-                        </div>
-                    </div>
-                </template>
             </div>
 
             <button @click="modalDetail = false" class="w-full mt-8 py-5 bg-slate-900 text-white rounded-[2rem] font-black text-[10px] uppercase tracking-[0.2em] shadow-xl hover:bg-emerald-600 active:scale-95 transition-all">Tutup Detail</button>

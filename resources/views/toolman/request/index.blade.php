@@ -31,7 +31,7 @@
         // Object Data Lengkap untuk Modal Detail
         selectedReq: { 
             id: '', nama: '', tipe: '', sub_info: '', barang: '', jumlah: 0, 
-            sisaStok: 0, catatan: '', 
+            sisaStok: 0, catatan: '', deadline: '',
             tgl_pinjam: '', tgl_kembali: '', kondisi: '', 
             denda: 0, status_denda: '', hilang: 0, detail_rusak: '', rating: 0 
         },
@@ -79,7 +79,6 @@
                         </div>
                     </div>
 
-                    {{-- Fitur Search Box --}}
                     <div class="relative w-full md:w-96">
                         <i class="bi bi-search absolute left-5 top-1/2 -translate-y-1/2 text-emerald-500"></i>
                         <input type="text" x-model="searchQuery" placeholder="Cari nama peminjam, kelas, atau alat..." 
@@ -125,6 +124,7 @@
                                     <tr class="bg-gray-50/50 text-[10px] uppercase tracking-[0.2em] text-gray-400 font-black bg-gray-50/50 leading-none">
                                         <th class="px-8 py-7">Identitas Peminjam</th>
                                         <th class="px-8 py-7 text-left">Alat & Monitoring Stok</th>
+                                        <th class="px-8 py-7">Batas Waktu</th> {{-- ✅ KOLOM BARU --}}
                                         <th class="px-8 py-7">Status</th>
                                         <th class="px-8 py-7 text-center">Konfirmasi Toolman</th>
                                     </tr>
@@ -134,30 +134,17 @@
                                     <tr class="group hover:bg-gray-50/50 transition-all duration-200" 
                                         x-show="searchQuery === '' || '{{ strtolower($loan->user->name) }}'.includes(searchQuery.toLowerCase()) || '{{ strtolower($loan->item->name) }}'.includes(searchQuery.toLowerCase())">
                                         
-                                        {{-- ✅ PERUBAHAN: IDENTITAS DIPERJELAS (SISWA vs KELAS) --}}
                                         <td class="px-8 py-6">
                                             <div class="flex flex-col text-left">
                                                 <span class="text-gray-900 font-black uppercase text-base tracking-tight">{{ $loan->user->name }}</span>
-                                                
                                                 <div class="flex flex-wrap items-center gap-2 mt-1.5">
                                                     @if($loan->user->role === 'student')
-                                                        {{-- Badge Siswa (Cyan) --}}
-                                                        <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[8px] font-black uppercase bg-cyan-50 text-cyan-600 border border-cyan-100">
-                                                            <i class="bi bi-person-fill"></i> Siswa
-                                                        </span>
-                                                        <span class="text-[9px] text-gray-400 font-bold uppercase tracking-widest">
-                                                            {{ $loan->user->classRoom->name ?? 'No Class' }}
-                                                        </span>
+                                                        <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[8px] font-black uppercase bg-cyan-50 text-cyan-600 border border-cyan-100"><i class="bi bi-person-fill"></i> Siswa</span>
+                                                        <span class="text-[9px] text-gray-400 font-bold uppercase tracking-widest">{{ $loan->user->classRoom->name ?? 'No Class' }}</span>
                                                     @else
-                                                        {{-- Badge Kelas (Purple) --}}
-                                                        <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[8px] font-black uppercase bg-purple-50 text-purple-600 border border-purple-100">
-                                                            <i class="bi bi-people-fill"></i> Kelas
-                                                        </span>
-                                                        <span class="text-[9px] text-gray-400 font-bold uppercase tracking-widest">
-                                                            {{ $loan->user->department->name ?? 'Unit' }}
-                                                        </span>
+                                                        <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[8px] font-black uppercase bg-purple-50 text-purple-600 border border-purple-100"><i class="bi bi-people-fill"></i> Kelas</span>
+                                                        <span class="text-[9px] text-gray-400 font-bold uppercase tracking-widest">{{ $loan->user->department->name ?? 'Unit' }}</span>
                                                     @endif
-                                                    
                                                     <span class="text-[9px] text-slate-300 mx-1">•</span>
                                                     <span class="text-[9px] text-gray-400 font-bold uppercase tracking-widest">{{ $loan->created_at->format('d M, H:i') }}</span>
                                                 </div>
@@ -169,18 +156,26 @@
                                                 <div class="w-12 h-12 rounded-2xl bg-emerald-50 text-emerald-600 flex items-center justify-center font-black text-base shadow-inner">{{ $loan->quantity }}</div>
                                                 <div class="flex flex-col text-left">
                                                     <span class="text-gray-800 font-black uppercase tracking-tight text-sm">{{ $loan->item->name }}</span>
-                                                    <span class="text-[10px] font-black uppercase mt-1 {{ $loan->item->stock < 5 ? 'text-red-500 animate-pulse' : 'text-gray-400' }}">
-                                                        Sisa Stok Gudang: {{ $loan->item->stock }} Unit
-                                                    </span>
+                                                    <span class="text-[10px] font-black uppercase mt-1 {{ $loan->item->stock < 5 ? 'text-red-500 animate-pulse' : 'text-gray-400' }}">Sisa Stok: {{ $loan->item->stock }} Unit</span>
                                                 </div>
                                             </div>
                                         </td>
+
+                                        {{-- ✅ INFO ESTIMASI DURASI --}}
+                                        <td class="px-8 py-6">
+                                            <div class="flex flex-col text-left leading-tight">
+                                                <span class="text-orange-600 font-black text-xs uppercase">{{ $loan->return_date ? \Carbon\Carbon::parse($loan->return_date)->translatedFormat('d M Y') : 'Hari Ini' }}</span>
+                                                <span class="text-[10px] font-bold text-gray-400 uppercase tracking-widest mt-1">Pukul {{ $loan->return_date ? \Carbon\Carbon::parse($loan->return_date)->format('H:i') : '-' }} WIB</span>
+                                            </div>
+                                        </td>
+
                                         <td class="px-8 py-6">
                                             <span class="inline-flex items-center px-3 py-1.5 rounded-xl text-[9px] font-black uppercase tracking-[0.1em]
                                                 {{ $loan->status === 'pending' ? 'bg-orange-50 text-orange-600 border border-orange-100' : 'bg-blue-50 text-blue-600 border border-blue-100' }}">
                                                 {{ $loan->status === 'pending' ? 'DALAM ANTREAN' : 'SEDANG DIPINJAM' }}
                                             </span>
                                         </td>
+
                                         <td class="px-8 py-6 text-center">
                                             <div class="flex items-center justify-center gap-2.5 relative z-10">
                                                 <button @click="selectedReq = {
@@ -191,6 +186,7 @@
                                                     barang: '{{ $loan->item->name }}', 
                                                     jumlah: '{{ $loan->quantity }}', 
                                                     catatan: '{{ $loan->reason }}',
+                                                    deadline: '{{ $loan->return_date ? \Carbon\Carbon::parse($loan->return_date)->translatedFormat('d M Y, H:i') : 'Hari Ini' }}',
                                                     tgl_pinjam: '{{ $loan->created_at->format('d M Y, H:i') }}'
                                                 }; modalDetail = true" 
                                                 class="w-11 h-11 rounded-2xl bg-gray-50 text-gray-400 hover:bg-indigo-50 hover:text-indigo-600 transition-all flex items-center justify-center shadow-sm">
@@ -216,7 +212,7 @@
                                         </td>
                                     </tr>
                                     @empty
-                                    <tr><td colspan="4" class="py-24 text-center text-gray-300 font-bold uppercase text-[10px] tracking-[0.3em] italic">Gudang sedang tidak memiliki sirkulasi aktif di wilayah Anda.</td></tr>
+                                    <tr><td colspan="5" class="py-24 text-center text-gray-300 font-bold uppercase text-[10px] tracking-[0.3em] italic">Gudang sedang tidak memiliki sirkulasi aktif di wilayah Anda.</td></tr>
                                     @endforelse
                                 </tbody>
                             </table>
@@ -265,7 +261,7 @@
                                             <span class="font-black text-red-600 bg-red-50 px-3 py-1.5 rounded-lg border border-red-100 text-sm">Rp {{ number_format($fine->fine_amount, 0, ',', '.') }}</span>
                                         </td>
                                         <td class="px-8 py-6 text-center">
-                                            <span class="px-3 py-1.5 rounded-xl text-[9px] font-black uppercase tracking-widest {{ $fine->fine_status === 'paid' ? 'bg-emerald-100 text-emerald-600 border border-emerald-200' : 'bg-red-100 text-red-600 border border-red-200 animate-pulse' }}">
+                                            <span class="px-3 py-1.5 rounded-xl text-[9px] font-black uppercase tracking-widest {{ $fine->fine_status === 'paid' ? 'bg-emerald-100 text-emerald-600' : 'bg-red-100 text-red-600 border border-red-200 animate-pulse' }}">
                                                 {{ $fine->fine_status === 'paid' ? 'LUNAS' : 'BELUM LUNAS' }}
                                             </span>
                                         </td>
@@ -436,7 +432,7 @@
         </div>
     </div>
 
-    {{-- ✅ MODAL KONFIRMASI KEMBALI (DENGAN INPUT DENDA & RUSAK) --}}
+    {{-- ✅ MODAL KONFIRMASI KEMBALI --}}
     <div x-show="modalReturn" x-cloak class="fixed inset-0 z-[130] flex items-center justify-center p-4">
         <div class="absolute inset-0 bg-slate-900/60 backdrop-blur-sm" @click="modalReturn = false"></div>
         <div x-show="modalReturn" x-transition.scale.95 class="relative w-full max-w-xl bg-white rounded-[3rem] shadow-2xl p-10 border border-white text-left overflow-y-auto max-h-[90vh] custom-scroll">
@@ -451,7 +447,6 @@
             <form :action="actionRoute" method="POST" class="space-y-8">
                 @csrf @method('PUT')
                 
-                {{-- PILIHAN KONDISI --}}
                 <div>
                     <label class="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-4">Klasifikasi Kondisi Fisik</label>
                     <div class="grid grid-cols-3 gap-3">
@@ -479,38 +474,32 @@
                     </div>
                 </div>
 
-                {{-- FORM INPUT DENDA (MUNCUL JIKA RUSAK/HILANG) --}}
                 <div x-show="returnCondition !== 'aman'" x-transition class="space-y-6 bg-red-50 p-6 rounded-[2rem] border border-red-100">
                     <div class="flex items-center gap-3 text-red-600 font-bold text-xs uppercase tracking-widest mb-2">
                         <i class="bi bi-exclamation-circle-fill"></i> Data Insiden
                     </div>
-                    
                     <div class="grid grid-cols-2 gap-4">
                         <div class="col-span-2">
                             <label class="block text-[10px] font-black text-red-400 uppercase tracking-widest mb-2">Detail Kerusakan/Kehilangan</label>
-                            <input type="text" name="return_note" placeholder="Contoh: Layar Pecah" 
-                                   class="w-full px-5 py-4 bg-white border border-red-200 rounded-2xl outline-none text-sm font-bold text-red-700 placeholder:text-red-200 focus:ring-4 focus:ring-red-500/10">
+                            <input type="text" name="return_note" placeholder="Contoh: Layar Pecah" class="w-full px-5 py-4 bg-white border border-red-200 rounded-2xl outline-none text-sm font-bold text-red-700">
                         </div>
                         <div>
                             <label class="block text-[10px] font-black text-red-400 uppercase tracking-widest mb-2">Unit Rusak/Hilang</label>
-                            <input type="number" name="lost_quantity" placeholder="0" :max="selectedReq.jumlah" min="1" 
-                                   class="w-full px-5 py-4 bg-white border border-red-200 rounded-2xl outline-none text-sm font-black text-red-700 placeholder:text-red-200 focus:ring-4 focus:ring-red-500/10">
+                            <input type="number" name="lost_quantity" placeholder="0" :max="selectedReq.jumlah" min="1" class="w-full px-5 py-4 bg-white border border-red-200 rounded-2xl outline-none text-sm font-black text-red-700">
                         </div>
                         <div>
                             <label class="block text-[10px] font-black text-red-400 uppercase tracking-widest mb-2">Nominal Denda</label>
                             <div class="relative">
                                 <span class="absolute left-5 top-1/2 -translate-y-1/2 text-red-400 font-bold text-sm">Rp</span>
-                                <input type="number" name="fine_amount" placeholder="0" min="0" 
-                                       class="w-full pl-12 pr-5 py-4 bg-white border border-red-200 rounded-2xl outline-none text-sm font-black text-red-700 placeholder:text-red-200 focus:ring-4 focus:ring-red-500/10">
+                                <input type="number" name="fine_amount" placeholder="0" min="0" class="w-full pl-12 pr-5 py-4 bg-white border border-red-200 rounded-2xl outline-none text-sm font-black text-red-700">
                             </div>
                         </div>
                     </div>
                 </div>
 
-                {{-- RATING --}}
                 <div>
                     <label class="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-3">Tingkat Kepercayaan (Rating)</label>
-                    <select name="rating" x-model="rating" required class="w-full px-6 py-5 bg-slate-50 border border-slate-100 rounded-2xl font-black text-sm outline-none shadow-inner">
+                    <select name="rating" x-model="rating" required class="w-full px-6 py-5 bg-slate-50 border border-slate-100 rounded-2xl font-black text-sm outline-none">
                         <option value="5">⭐⭐⭐⭐⭐ - Sangat Bertanggung Jawab</option>
                         <option value="4">⭐⭐⭐⭐ - Bagus & Tepat Waktu</option>
                         <option value="3">⭐⭐⭐ - Standar</option>
@@ -553,7 +542,6 @@
             </div>
             
             <div class="space-y-6 text-left leading-none">
-                {{-- Info Barang --}}
                 <div class="p-8 bg-gray-50 rounded-[2.5rem] border border-gray-100 space-y-4">
                     <div class="flex justify-between items-center"><span class="text-gray-400 uppercase text-[9px] font-black">Alat Praktikum</span><span class="text-gray-900 font-black uppercase text-sm" x-text="selectedReq.barang"></span></div>
                     <div class="flex justify-between items-center"><span class="text-gray-400 uppercase text-[9px] font-black">Jumlah Request</span><span class="text-emerald-600 font-black text-lg" x-text="selectedReq.jumlah + ' Unit'"></span></div>
@@ -561,55 +549,24 @@
                         <span class="text-gray-400 uppercase text-[9px] font-black">Tanggal Pinjam</span>
                         <span class="text-gray-700 font-black text-xs" x-text="selectedReq.tgl_pinjam || '-'"></span>
                     </div>
+                    {{-- ✅ INFO DEADLINE DI MODAL --}}
+                    <div class="flex justify-between items-center">
+                        <span class="text-gray-400 uppercase text-[9px] font-black">Estimasi Pengembalian</span>
+                        <span class="text-orange-600 font-black text-xs" x-text="selectedReq.deadline"></span>
+                    </div>
                 </div>
 
-                {{-- Info Pengembalian (Arsip) --}}
                 <div x-show="selectedReq.tgl_kembali && selectedReq.tgl_kembali !== '-'" class="p-8 bg-emerald-50/50 rounded-[2.5rem] border border-emerald-100 text-left space-y-3">
-                    <div class="flex justify-between items-center">
-                        <span class="text-[10px] font-black text-emerald-600 uppercase tracking-widest">Dikembalikan:</span>
-                        <span class="text-xs font-black text-emerald-900" x-text="selectedReq.tgl_kembali"></span>
-                    </div>
-                    <div class="flex justify-between items-center">
-                        <span class="text-[10px] font-black text-emerald-600 uppercase tracking-widest">Kondisi Akhir:</span>
-                        <span class="text-xs font-black uppercase px-2 py-1 rounded" 
-                              :class="selectedReq.kondisi === 'aman' ? 'bg-emerald-200 text-emerald-800' : 'bg-red-200 text-red-800'" 
-                              x-text="selectedReq.kondisi"></span>
-                    </div>
-                    <div x-show="selectedReq.rating > 0" class="flex justify-between items-center">
-                        <span class="text-[10px] font-black text-emerald-600 uppercase tracking-widest">Rating:</span>
-                        <div class="flex text-orange-400 text-xs">
-                            <template x-for="i in parseInt(selectedReq.rating)">
-                                <i class="bi bi-star-fill"></i>
-                            </template>
-                        </div>
-                    </div>
+                    <div class="flex justify-between items-center"><span class="text-[10px] font-black text-emerald-600 uppercase tracking-widest">Dikembalikan:</span><span class="text-xs font-black text-emerald-900" x-text="selectedReq.tgl_kembali"></span></div>
+                    <div class="flex justify-between items-center"><span class="text-[10px] font-black text-emerald-600 uppercase tracking-widest">Kondisi Akhir:</span><span class="text-xs font-black uppercase px-2 py-1 rounded" :class="selectedReq.kondisi === 'aman' ? 'bg-emerald-200 text-emerald-800' : 'bg-red-200 text-red-800'" x-text="selectedReq.kondisi"></span></div>
                 </div>
 
-                {{-- Info Denda & Kerusakan (Jika Ada) --}}
                 <div x-show="selectedReq.denda && selectedReq.denda !== '0'" class="p-8 bg-red-50 rounded-[2.5rem] border border-red-100 text-left space-y-4">
-                    <div class="flex items-center gap-2 text-red-600 font-black text-xs uppercase tracking-widest mb-2">
-                        <i class="bi bi-exclamation-triangle-fill"></i> Laporan Insiden
-                    </div>
-                    <div class="flex justify-between items-center">
-                        <span class="text-red-400 uppercase text-[9px] font-black">Detail Kerusakan</span>
-                        <span class="text-red-800 font-bold text-xs uppercase" x-text="selectedReq.detail_rusak || '-'"></span>
-                    </div>
-                    <div x-show="selectedReq.hilang > 0" class="flex justify-between items-center">
-                        <span class="text-red-400 uppercase text-[9px] font-black">Unit Hilang/Rusak</span>
-                        <span class="text-red-800 font-black text-xs uppercase" x-text="selectedReq.hilang + ' Unit'"></span>
-                    </div>
-                    <div class="pt-4 border-t border-red-200 flex justify-between items-center">
-                        <span class="text-red-500 uppercase text-[9px] font-black">Total Denda</span>
-                        <span class="text-red-600 font-black text-lg" x-text="'Rp ' + selectedReq.denda"></span>
-                    </div>
-                    <div class="text-center pt-2">
-                        <span class="px-3 py-1 rounded-lg text-[9px] font-black uppercase tracking-widest"
-                              :class="selectedReq.status_denda === 'paid' ? 'bg-emerald-100 text-emerald-600' : 'bg-red-200 text-red-700 animate-pulse'"
-                              x-text="selectedReq.status_denda === 'paid' ? 'SUDAH LUNAS' : 'BELUM DIBAYAR'"></span>
-                    </div>
+                    <div class="flex items-center gap-2 text-red-600 font-black text-xs uppercase tracking-widest mb-2"><i class="bi bi-exclamation-triangle-fill"></i> Laporan Insiden</div>
+                    <div class="flex justify-between items-center"><span class="text-red-400 uppercase text-[9px] font-black">Detail Kerusakan</span><span class="text-red-800 font-bold text-xs uppercase" x-text="selectedReq.detail_rusak || '-'"></span></div>
+                    <div class="pt-4 border-t border-red-200 flex justify-between items-center"><span class="text-red-500 uppercase text-[9px] font-black">Total Denda</span><span class="text-red-600 font-black text-lg" x-text="'Rp ' + selectedReq.denda"></span></div>
                 </div>
 
-                {{-- Catatan Peminjam --}}
                 <div class="p-6 bg-slate-50 border border-slate-100 rounded-[2rem]">
                     <p class="text-[9px] font-black text-slate-400 uppercase mb-2 tracking-widest">Catatan Peminjam:</p>
                     <p class="text-xs text-slate-600 font-medium italic leading-relaxed" x-text="selectedReq.catatan || '-'"></p>

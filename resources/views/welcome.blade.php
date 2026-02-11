@@ -85,7 +85,7 @@
         <div class="blob blob-2"></div>
     </div>
 
-   <header 
+<header 
     x-data="{ scrolled: false, mobileOpen: false }" 
     @scroll.window="scrolled = (window.pageYOffset > 20)"
     class="fixed top-0 left-0 right-0 z-[60] flex justify-center transition-all duration-500"
@@ -94,13 +94,13 @@
     <div 
         class="relative flex items-center justify-between transition-all duration-500 border"
         :class="{ 
-            'w-[92%] md:w-[85%] lg:max-w-6xl bg-[#0f172a]/80 backdrop-blur-xl rounded-full border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.25)] py-2.5 px-4 md:px-6': scrolled, 
+            'w-[92%] md:w-[85%] lg:max-w-6xl bg-[#0f172a]/80 backdrop-blur-xl rounded-full border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.3)] py-2.5 px-6': scrolled, 
             'w-full bg-transparent border-transparent px-6 lg:px-12': !scrolled 
         }"
     >
         
         <a href="#" class="flex items-center gap-3 group shrink-0">
-            <div class="relative w-10 h-10 rounded-full bg-gradient-to-br from-[#1e1b4b] to-indigo-900 border border-indigo-500/30 flex items-center justify-center shadow-lg group-hover:scale-105 transition-transform duration-300 overflow-hidden">
+            <div class="relative w-10 h-10 rounded-full bg-gradient-to-br from-[#1e1b4b] to-indigo-900 border border-indigo-500/30 flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300 overflow-hidden">
                 <div class="absolute inset-0 bg-indigo-500/20 blur-md"></div>
                 <span class="relative text-white font-bold text-lg font-heading">TL</span>
             </div>
@@ -110,22 +110,22 @@
                 </span>
                 <span class="text-[9px] text-gray-400 tracking-[0.2em] uppercase mt-0.5" 
                       :class="{ 'hidden sm:block': scrolled }">
-                    Digital Workshop
+                    SMKN 1 CIOMAS
                 </span>
             </div>
         </a>
 
         <nav class="hidden md:flex items-center justify-center absolute left-1/2 -translate-x-1/2">
             <div class="flex items-center gap-1 p-1 rounded-full bg-white/5 border border-white/5 backdrop-blur-sm shadow-inner">
-                <a href="#home" class="px-4 py-1.5 rounded-full text-sm font-medium text-gray-300 hover:text-white hover:bg-white/10 transition-all duration-300">Beranda</a>
-                <a href="#jurusan" class="px-4 py-1.5 rounded-full text-sm font-medium text-gray-300 hover:text-white hover:bg-white/10 transition-all duration-300">Jurusan</a>
-                <a href="#alur" class="px-4 py-1.5 rounded-full text-sm font-medium text-gray-300 hover:text-white hover:bg-white/10 transition-all duration-300">Alur</a>
+                <a href="#home" class="px-5 py-1.5 rounded-full text-sm font-medium text-gray-300 hover:text-white hover:bg-white/10 transition-all duration-300">Beranda</a>
+                <a href="#roles" class="px-5 py-1.5 rounded-full text-sm font-medium text-gray-300 hover:text-white hover:bg-white/10 transition-all duration-300">Hak Akses</a>
+                <a href="#alur" class="px-5 py-1.5 rounded-full text-sm font-medium text-gray-300 hover:text-white hover:bg-white/10 transition-all duration-300">Alur</a>
             </div>
         </nav>
 
         <div class="flex items-center gap-4 shrink-0">
             <a href="{{ route('login') }}" 
-               class="hidden md:flex relative group px-5 py-2 rounded-full overflow-hidden shadow-lg shadow-indigo-500/20 transition-all duration-300 hover:shadow-indigo-500/40 hover:-translate-y-0.5">
+               class="hidden md:flex relative group px-6 py-2 rounded-full overflow-hidden shadow-lg shadow-indigo-500/20 transition-all duration-300 hover:shadow-indigo-500/40 hover:-translate-y-0.5 active:scale-95">
                 <div class="absolute inset-0 bg-gradient-to-r from-indigo-600 to-purple-600 group-hover:scale-110 transition-transform duration-500"></div>
                 <span class="relative flex items-center gap-2 text-sm font-bold text-white">
                     <i class="bi bi-person-circle text-xs"></i> 
@@ -133,7 +133,7 @@
                 </span>
             </a>
 
-            <button @click="mobileOpen = !mobileOpen" class="md:hidden relative w-10 h-10 flex items-center justify-center rounded-full bg-white/5 hover:bg-white/10 text-white transition-colors focus:outline-none">
+            <button @click="mobileOpen = !mobileOpen" class="md:hidden relative w-10 h-10 flex items-center justify-center rounded-full bg-white/5 hover:bg-white/10 text-white transition-colors focus:outline-none border border-white/10">
                 <i :class="mobileOpen ? 'bi bi-x-lg' : 'bi bi-list'" class="text-xl transition-all duration-300"></i>
             </button>
         </div>
@@ -147,136 +147,149 @@
          x-transition:leave-start="opacity-100 translate-y-0 scale-100"
          x-transition:leave-end="opacity-0 -translate-y-5 scale-95"
          @click.away="mobileOpen = false"
-         class="absolute top-full mt-2 w-[90%] max-w-sm bg-[#0f172a]/95 backdrop-blur-xl border border-white/10 rounded-2xl p-4 shadow-2xl flex flex-col gap-2 md:hidden origin-top"
+         class="absolute top-full mt-3 w-[92%] max-w-sm bg-[#0f172a]/95 backdrop-blur-2xl border border-white/10 rounded-[2.5rem] p-5 shadow-2xl flex flex-col gap-2 md:hidden origin-top"
          style="display: none;">
         
-        <a href="#home" class="p-3 rounded-xl text-gray-300 hover:bg-white/5 hover:text-white flex items-center gap-3 transition-colors">
-            <i class="bi bi-house-door text-indigo-400"></i> Beranda
+        <div class="px-3 py-1 mb-2">
+            <p class="text-[10px] font-bold text-gray-500 uppercase tracking-widest">Navigation</p>
+        </div>
+
+        <a href="#home" @click="mobileOpen = false" class="p-4 rounded-2xl text-gray-300 hover:bg-white/5 hover:text-white flex items-center gap-4 transition-colors">
+            <i class="bi bi-house-door text-indigo-400"></i> 
+            <span class="font-semibold">Beranda</span>
         </a>
-        <a href="#jurusan" class="p-3 rounded-xl text-gray-300 hover:bg-white/5 hover:text-white flex items-center gap-3 transition-colors">
-            <i class="bi bi-mortarboard text-indigo-400"></i> Jurusan
+        <a href="#roles" @click="mobileOpen = false" class="p-4 rounded-2xl text-gray-300 hover:bg-white/5 hover:text-white flex items-center gap-4 transition-colors">
+            <i class="bi bi-shield-lock text-indigo-400"></i> 
+            <span class="font-semibold">Hak Akses</span>
         </a>
-        <a href="#alur" class="p-3 rounded-xl text-gray-300 hover:bg-white/5 hover:text-white flex items-center gap-3 transition-colors">
-            <i class="bi bi-diagram-3 text-indigo-400"></i> Alur
-        </a>
-        <a href="#katalog" class="p-3 rounded-xl text-gray-300 hover:bg-white/5 hover:text-white flex items-center gap-3 transition-colors">
-            <i class="bi bi-grid text-indigo-400"></i> Katalog
+        <a href="#alur" @click="mobileOpen = false" class="p-4 rounded-2xl text-gray-300 hover:bg-white/5 hover:text-white flex items-center gap-4 transition-colors">
+            <i class="bi bi-diagram-3 text-indigo-400"></i> 
+            <span class="font-semibold">Alur Sistem</span>
         </a>
         
-        <div class="h-px bg-white/10 my-1"></div>
+        <div class="h-px bg-white/10 my-2 mx-4"></div>
         
-        <a href="{{ route('login') }}" class="p-3 rounded-xl bg-indigo-600/20 text-indigo-300 hover:bg-indigo-600 hover:text-white flex items-center justify-center gap-2 font-bold transition-all">
-            <i class="bi bi-box-arrow-in-right"></i> Portal Login
+        <a href="{{ route('login') }}" class="p-4 rounded-full bg-gradient-to-r from-indigo-600 to-purple-600 text-white flex items-center justify-center gap-2 font-bold transition-all shadow-lg shadow-indigo-600/20">
+            <i class="bi bi-box-arrow-in-right"></i> Masuk ke Portal
         </a>
     </div>
-
 </header>
 
     <main>
-     <section id="home" class="relative pt-32 pb-20 lg:pt-40 lg:pb-32 flex items-center min-h-screen overflow-hidden">
+<section id="home" class="relative pt-32 pb-24 lg:pt-0 lg:pb-0 flex items-center min-h-screen overflow-hidden bg-[#030712]">
     
-    <div class="absolute top-0 left-0 w-[400px] h-[400px] bg-indigo-600/10 rounded-full blur-[100px] -z-10 translate-x-[-30%] translate-y-[-20%]"></div>
-    <div class="absolute bottom-0 right-0 w-[400px] h-[400px] bg-purple-600/10 rounded-full blur-[100px] -z-10 translate-x-[20%] translate-y-[20%]"></div>
+    <div class="absolute top-0 left-0 w-[500px] h-[500px] bg-indigo-600/10 rounded-full blur-[120px] -z-10 -translate-x-1/2 -translate-y-1/2"></div>
+    <div class="absolute bottom-0 right-0 w-[500px] h-[500px] bg-purple-600/10 rounded-full blur-[120px] -z-10 translate-x-1/4 translate-y-1/4"></div>
 
     <div class="container mx-auto max-w-6xl px-8 md:px-12 lg:px-16 relative z-10">
-        
-        <div class="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center">
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-16 lg:gap-24 items-center">
             
-            <div data-aos="fade-right" class="text-center lg:text-left mx-auto lg:mx-0 max-w-xl">
+            <div data-aos="fade-right" class="text-center lg:text-left mx-auto lg:mx-0 max-w-lg">
                 
-                <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-indigo-500/10 border border-indigo-500/20 text-[10px] md:text-xs font-bold text-indigo-300 mb-6 justify-center lg:justify-start">
-                    <span class="flex h-2 w-2 relative">
+                <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-indigo-500/5 border border-indigo-500/10 text-[10px] font-bold text-indigo-400 mb-8 justify-center lg:justify-start tracking-[0.3em] uppercase">
+                    <span class="relative flex h-1.5 w-1.5">
                         <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-indigo-400 opacity-75"></span>
-                        <span class="relative inline-flex rounded-full h-2 w-2 bg-indigo-500"></span>
+                        <span class="relative inline-flex rounded-full h-1.5 w-1.5 bg-indigo-500"></span>
                     </span>
-                    <span>Live System v2.0</span>
+                    System Ecosystem v2.0
                 </div>
 
-                <h1 class="text-4xl md:text-5xl lg:text-6xl font-bold font-heading leading-[1.15] mb-6 tracking-tight text-white">
-                    Kelola Alat <br>
-                    <span class="text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 to-purple-400">Tanpa Ribet.</span>
+                <h1 class="text-4xl md:text-5xl lg:text-6xl font-black leading-[1.1] mb-6 tracking-tight text-white">
+                    Kendali Aset <br>
+                    <span class="text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 to-cyan-400">Digital Terpadu.</span>
                 </h1>
                 
-                <p class="text-gray-400 text-sm md:text-base leading-relaxed mb-8 border-l-0 lg:border-l-2 border-indigo-500/30 lg:pl-4 max-w-lg mx-auto lg:mx-0">
-                    Sistem inventaris terintegrasi untuk Siswa dan Toolman. Pinjam barang pakai QR Code, cek stok real-time, dan laporan otomatis.
+                <p class="text-gray-400 text-sm md:text-base leading-relaxed mb-10 opacity-80">
+                    Solusi manajemen inventaris modern yang dirancang untuk transparansi dan kecepatan akses data bagi Admin, Toolman, hingga Siswa.
                 </p>
 
-                <div class="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-4">
-                    <a href="#katalog" class="w-full sm:w-auto bg-indigo-600 hover:bg-indigo-500 text-white px-8 py-3 rounded-full font-bold shadow-lg shadow-indigo-500/25 flex items-center justify-center gap-2 transition-all hover:-translate-y-1 text-sm">
-                        Mulai Pinjam <i class="bi bi-arrow-right"></i>
-                    </a>
-                    <a href="#alur" class="w-full sm:w-auto px-8 py-3 rounded-full text-gray-300 font-semibold border border-white/10 hover:bg-white/5 hover:text-white transition-all text-sm flex items-center justify-center gap-2">
-                        <i class="bi bi-play-circle"></i> Demo
-                    </a>
+                <div class="grid grid-cols-2 gap-6 mb-12">
+                    <div class="space-y-2">
+                        <div class="flex items-center gap-2 text-indigo-400 justify-center lg:justify-start">
+                            <i class="bi bi-qr-code-scan text-lg"></i>
+                            <span class="text-xs font-bold uppercase tracking-wider text-white">Scan & Go</span>
+                        </div>
+                        <p class="text-[11px] text-gray-500 leading-normal">Peminjaman kilat tanpa birokrasi kertas.</p>
+                    </div>
+                    <div class="space-y-2">
+                        <div class="flex items-center gap-2 text-cyan-400 justify-center lg:justify-start">
+                            <i class="bi bi-shield-check text-lg"></i>
+                            <span class="text-xs font-bold uppercase tracking-wider text-white">Real-Time</span>
+                        </div>
+                        <p class="text-[11px] text-gray-500 leading-normal">Pantau status alat secara live & akurat.</p>
+                    </div>
                 </div>
 
-                <div class="mt-10 flex items-center justify-center lg:justify-start gap-8 pt-6 border-t border-white/5">
-                    <div>
-                        <h4 class="text-2xl font-bold text-white">1,250+</h4>
-                        <p class="text-[10px] text-gray-500 uppercase tracking-wider">Total Alat</p>
-                    </div>
-                    <div class="w-px h-8 bg-white/10"></div>
-                    <div>
-                        <h4 class="text-2xl font-bold text-white">100%</h4>
-                        <p class="text-[10px] text-gray-500 uppercase tracking-wider">Digital</p>
-                    </div>
+                <div class="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-5">
+                    <a href="#katalog" class="w-full sm:w-auto bg-indigo-600 hover:bg-indigo-500 text-white px-9 py-3.5 rounded-xl font-bold transition-all shadow-lg shadow-indigo-600/20 text-xs flex items-center justify-center gap-3 active:scale-95">
+                        Mulai Akses <i class="bi bi-arrow-right"></i>
+                    </a>
                 </div>
             </div>
 
-            <div class="relative flex justify-center items-center py-10 lg:py-0" data-aos="fade-left" data-aos-delay="200">
-                
-                <div class="relative w-[320px] h-[320px] md:w-[400px] md:h-[400px]">
+            <div class="hidden lg:flex relative justify-center items-center" data-aos="fade-left" data-aos-delay="200">
+                <div class="relative w-[450px] h-[450px]">
                     
-                    <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-40 h-40 bg-indigo-500/20 rounded-full blur-3xl animate-pulse"></div>
+                    <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-48 h-48 bg-indigo-500/20 rounded-full blur-[80px]"></div>
 
-                    <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-20">
-                        <div class="glass p-6 rounded-3xl border border-indigo-500/40 shadow-[0_0_50px_rgba(99,102,241,0.3)] bg-[#0f172a]/80 backdrop-blur-xl flex flex-col items-center">
-                            <i class="bi bi-qr-code-scan text-5xl text-white mb-2"></i>
-                            <span class="text-[10px] font-bold text-indigo-300 uppercase tracking-widest">System Core</span>
+                    <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-30">
+                        <div class="bg-[#0f172a] p-5 rounded-[2rem] border border-white/10 shadow-2xl flex flex-col items-center">
+                            <div class="w-14 h-14 rounded-2xl bg-gradient-to-tr from-indigo-500 to-indigo-700 flex items-center justify-center mb-2 relative">
+                                <i class="bi bi-cpu text-3xl text-white"></i>
+                                <div class="absolute -inset-1 bg-indigo-500/30 rounded-2xl blur-md animate-pulse"></div>
+                            </div>
+                            <p class="text-[9px] font-bold text-gray-500 uppercase tracking-widest text-center">Core System</p>
                         </div>
                     </div>
 
-                    <div class="absolute top-0 left-4 md:left-10 animate-[float_6s_ease-in-out_infinite]">
-                        <div class="glass p-4 rounded-2xl border border-white/10 bg-[#1e293b]/90 shadow-xl flex items-center gap-3">
-                            <div class="w-10 h-10 rounded-lg bg-blue-500/20 flex items-center justify-center text-blue-400">
-                                <i class="bi bi-laptop text-xl"></i>
+                    <div class="absolute -top-2 right-2 animate-[float_6s_ease-in-out_infinite] z-40">
+                        <div class="bg-white/5 backdrop-blur-xl p-3 px-4 rounded-xl border border-white/10 flex items-center gap-3 shadow-xl">
+                            <div class="w-6 h-6 rounded-full bg-indigo-500/20 flex items-center justify-center text-indigo-400 text-[10px]">
+                                <i class="bi bi-shield-lock"></i>
                             </div>
-                            <div class="hidden md:block">
-                                <p class="text-[10px] text-gray-400">RPL</p>
-                                <p class="text-xs font-bold text-white">Macbook</p>
-                            </div>
+                            <span class="text-[10px] font-bold text-white uppercase tracking-tight">Admin Portal</span>
                         </div>
                     </div>
 
-                    <div class="absolute top-10 right-0 animate-[float_5s_ease-in-out_infinite_1s]">
-                        <div class="glass p-4 rounded-2xl border border-white/10 bg-[#1e293b]/90 shadow-xl flex items-center gap-3">
-                            <div class="w-10 h-10 rounded-lg bg-rose-500/20 flex items-center justify-center text-rose-400">
-                                <i class="bi bi-camera-reels text-xl"></i>
+                    <div class="absolute -bottom-2 left-2 animate-[float_8s_ease-in-out_infinite_1s] z-40">
+                        <div class="bg-white/5 backdrop-blur-xl p-3 px-4 rounded-xl border border-white/10 flex items-center gap-3 shadow-xl">
+                            <div class="w-6 h-6 rounded-full bg-amber-500/20 flex items-center justify-center text-amber-500 text-[10px]">
+                                <i class="bi bi-tools"></i>
                             </div>
-                            </div>
-                    </div>
-
-                    <div class="absolute bottom-10 left-0 animate-[float_7s_ease-in-out_infinite_0.5s]">
-                        <div class="glass p-4 rounded-2xl border border-white/10 bg-[#1e293b]/90 shadow-xl flex items-center gap-3">
-                            <div class="w-10 h-10 rounded-lg bg-amber-500/20 flex items-center justify-center text-amber-400">
-                                <i class="bi bi-wrench-adjustable text-xl"></i>
-                            </div>
+                            <span class="text-[10px] font-bold text-white uppercase tracking-tight">Toolman Verifier</span>
                         </div>
                     </div>
 
-                    <div class="absolute bottom-0 right-10 animate-[float_6s_ease-in-out_infinite_2s]">
-                        <div class="glass p-4 rounded-2xl border border-white/10 bg-[#1e293b]/90 shadow-xl flex items-center gap-3">
-                            <div class="hidden md:block text-right">
-                                <p class="text-[10px] text-gray-400">Las</p>
-                                <p class="text-xs font-bold text-white">Welding</p>
-                            </div>
-                            <div class="w-10 h-10 rounded-lg bg-cyan-500/20 flex items-center justify-center text-cyan-400">
-                                <i class="bi bi-fire text-xl"></i>
-                            </div>
+                    <div class="absolute top-1/4 -left-6 animate-[float_7s_ease-in-out_infinite_0.5s] z-20">
+                        <div class="bg-white/5 backdrop-blur-md p-2 px-3 rounded-lg border border-white/5 shadow-lg flex items-center gap-2">
+                            <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
+                            <span class="text-[9px] text-gray-400 font-medium">Activity Monitoring</span>
                         </div>
                     </div>
 
-                    <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[280px] h-[280px] border border-dashed border-white/10 rounded-full animate-[spin_20s_linear_infinite] -z-10"></div>
+                    <div class="absolute bottom-1/4 -right-6 animate-[float_9s_ease-in-out_infinite_1.5s] z-20">
+                        <div class="bg-white/5 backdrop-blur-md p-2 px-3 rounded-lg border border-white/5 shadow-lg flex items-center gap-2">
+                            <div class="w-5 h-5 rounded-full bg-rose-500/20 flex items-center justify-center text-rose-400 text-[10px]">
+                                <i class="bi bi-phone"></i>
+                            </div>
+                            <span class="text-[9px] text-gray-400 font-medium">Siswa App</span>
+                        </div>
+                    </div>
+
+                    <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full h-full border border-dashed border-white/10 rounded-full animate-[spin_50s_linear_infinite] -z-10"></div>
+                    <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[85%] h-[85%] border border-white/5 rounded-full -z-10"></div>
+
+                    <svg class="absolute top-0 left-0 w-full h-full pointer-events-none opacity-30" viewBox="0 0 400 400" fill="none">
+                        <path d="M200 200L320 100" stroke="url(#grad1)" stroke-width="1" stroke-dasharray="4 4" class="animate-pulse"/>
+                        <path d="M200 200L100 320" stroke="url(#grad2)" stroke-width="1" stroke-dasharray="4 4" class="animate-pulse"/>
+                        <path d="M200 200L80 120" stroke="url(#grad3)" stroke-width="1" stroke-dasharray="4 4" class="animate-pulse"/>
+                        <defs>
+                            <linearGradient id="grad1" x1="200" y1="200" x2="320" y2="100" gradientUnits="userSpaceOnUse"><stop stop-color="#6366f1"/><stop offset="1" stop-color="#6366f1" stop-opacity="0"/></linearGradient>
+                            <linearGradient id="grad2" x1="200" y1="200" x2="100" y2="320" gradientUnits="userSpaceOnUse"><stop stop-color="#f59e0b"/><stop offset="1" stop-color="#f59e0b" stop-opacity="0"/></linearGradient>
+                            <linearGradient id="grad3" x1="200" y1="200" x2="80" y2="120" gradientUnits="userSpaceOnUse"><stop stop-color="#10b981"/><stop offset="1" stop-color="#10b981" stop-opacity="0"/></linearGradient>
+                        </defs>
+                    </svg>
+
                 </div>
             </div>
 
@@ -286,8 +299,8 @@
 
 <style>
 @keyframes float {
-    0%, 100% { transform: translateY(0px); }
-    50% { transform: translateY(-15px); }
+    0%, 100% { transform: translateY(0px) rotate(0deg); }
+    50% { transform: translateY(-15px) rotate(1deg); }
 }
 @keyframes spin {
     from { transform: translate(-50%, -50%) rotate(0deg); }
@@ -295,111 +308,82 @@
 }
 </style>
 
-       <section id="jurusan" class="py-20 relative overflow-hidden bg-[#0b1120]">
-    
+  <section id="roles" class="py-24 relative overflow-hidden bg-[#0b1120]">
     <div class="absolute inset-0 overflow-hidden pointer-events-none">
-        <div class="absolute top-0 left-1/4 w-[400px] h-[400px] bg-indigo-600/10 rounded-full blur-[100px] mix-blend-screen"></div>
-        <div class="absolute bottom-0 right-1/4 w-[400px] h-[400px] bg-blue-600/10 rounded-full blur-[100px] mix-blend-screen"></div>
+        <div class="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[300px] bg-indigo-500/5 rounded-full blur-[120px]"></div>
     </div>
 
     <div class="container mx-auto px-6 relative z-10">
-        
-        <div class="text-center max-w-2xl mx-auto mb-12" data-aos="fade-up">
-            <span class="inline-block py-1 px-3 rounded-full bg-indigo-500/10 border border-indigo-500/20 text-indigo-400 text-[10px] font-bold tracking-widest uppercase mb-3">
-                Kompetensi Keahlian
-            </span>
-            <h2 class="text-3xl font-bold text-white mb-3">
-                Fasilitas & Jurusan
+        <div class="text-center max-w-2xl mx-auto mb-20" data-aos="fade-up">
+            <span class="text-indigo-400 text-[10px] font-bold tracking-[0.3em] uppercase mb-3 block">Access Management</span>
+            <h2 class="text-3xl md:text-4xl font-bold text-white mb-4 tracking-tight">
+                Struktur & <span class="text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 to-cyan-400">Hak Akses</span>
             </h2>
-            <p class="text-gray-400 text-sm leading-relaxed max-w-lg mx-auto">
-                Pilihan jurusan dengan standar industri dan fasilitas lengkap.
+            <div class="h-1 w-12 bg-indigo-500 mx-auto rounded-full mb-6"></div>
+            <p class="text-gray-400 text-sm md:text-base leading-relaxed">
+                Sistem manajemen terintegrasi dengan pembagian tugas yang spesifik untuk efisiensi operasional.
             </p>
         </div>
 
-        <div class="flex flex-wrap justify-center gap-5">
+        <div class="max-w-4xl mx-auto flex flex-col gap-y-16 relative">
+            
+            <div class="hidden md:block absolute left-1/2 top-0 bottom-0 w-[1px] bg-gradient-to-b from-gray-800 via-indigo-500/30 to-gray-800 -translate-x-1/2"></div>
 
-            <div class="group w-full md:w-[calc(50%-1.25rem)] lg:w-[30%]" data-aos="fade-up">
-                <div class="h-full bg-[#111827] rounded-2xl p-6 border border-white/5 hover:border-indigo-500/50 transition-all duration-300 relative overflow-hidden flex flex-col items-center text-center shadow-lg hover:shadow-indigo-500/20 hover:-translate-y-1">
-                    <div class="absolute top-0 w-16 h-[2px] bg-indigo-500 shadow-[0_0_15px_rgba(99,102,241,0.7)]"></div>
-                    
-                    <div class="w-14 h-14 rounded-xl bg-[#1e293b] flex items-center justify-center mb-4 text-gray-400 group-hover:text-white group-hover:scale-105 transition-all duration-300 border border-white/5 shadow-inner">
-                        <i class="bi bi-code-square text-2xl"></i>
+            <div class="group relative flex flex-col md:flex-row items-center gap-6 md:gap-12 text-center md:text-left" data-aos="fade-right">
+                <div class="w-full md:w-1/2 flex justify-center md:justify-end order-1">
+                    <div class="relative">
+                        <div class="w-16 h-16 rounded-2xl bg-indigo-500/10 flex items-center justify-center text-indigo-400 border border-indigo-500/20 group-hover:bg-indigo-500 group-hover:text-white transition-all duration-500 shadow-[0_0_25px_rgba(99,102,241,0.2)]">
+                            <i class="bi bi-shield-lock text-3xl"></i>
+                        </div>
                     </div>
-                    
-                    <h3 class="text-lg font-bold text-white mb-1">PPLG / RPL</h3>
-                    <p class="text-[10px] font-medium text-indigo-400 uppercase tracking-widest mb-3">Software Engineering</p>
-                    
-                    <p class="text-xs text-gray-400 leading-relaxed">
-                        Pengembangan software, aplikasi mobile, dan website dengan lab spek tinggi.
-                    </p>
+                </div>
+                <div class="hidden md:flex absolute left-1/2 -translate-x-1/2 w-3 h-3 rounded-full bg-indigo-500 border-4 border-[#0b1120] z-20 shadow-[0_0_10px_rgba(99,102,241,0.8)]"></div>
+                <div class="w-full md:w-1/2 order-2">
+                    <h3 class="text-xl font-bold text-white mb-1">Administrator</h3>
+                    <p class="text-[10px] tracking-[0.2em] text-indigo-400 uppercase font-bold mb-2">Super User Access</p>
+                    <p class="text-gray-400 text-sm leading-relaxed max-w-sm mx-auto md:mx-0">Otoritas penuh dalam manajemen database, konfigurasi sistem, monitoring seluruh akun, dan rekapitulasi data global.</p>
                 </div>
             </div>
 
-            <div class="group w-full md:w-[calc(50%-1.25rem)] lg:w-[30%]" data-aos="fade-up" data-aos-delay="100">
-                <div class="h-full bg-[#111827] rounded-2xl p-6 border border-white/5 hover:border-rose-500/50 transition-all duration-300 relative overflow-hidden flex flex-col items-center text-center shadow-lg hover:shadow-rose-500/20 hover:-translate-y-1">
-                    <div class="absolute top-0 w-16 h-[2px] bg-rose-500 shadow-[0_0_15px_rgba(244,63,94,0.7)]"></div>
-                    
-                    <div class="w-14 h-14 rounded-xl bg-[#1e293b] flex items-center justify-center mb-4 text-gray-400 group-hover:text-white group-hover:scale-105 transition-all duration-300 border border-white/5 shadow-inner">
-                        <i class="bi bi-camera-reels text-2xl"></i>
+            <div class="group relative flex flex-col md:flex-row items-center gap-6 md:gap-12 text-center md:text-right" data-aos="fade-left">
+                <div class="w-full md:w-1/2 order-2 md:order-1">
+                    <h3 class="text-xl font-bold text-white mb-1">Toolman</h3>
+                    <p class="text-[10px] tracking-[0.2em] text-amber-400 uppercase font-bold mb-2">Inventory Manager</p>
+                    <p class="text-gray-400 text-sm leading-relaxed max-w-sm mx-auto md:ml-auto md:mr-0">Bertanggung jawab atas manajemen alat (tools), verifikasi peminjaman, pengecekan kondisi aset, dan inventarisasi lab.</p>
+                </div>
+                <div class="hidden md:flex absolute left-1/2 -translate-x-1/2 w-3 h-3 rounded-full bg-amber-500 border-4 border-[#0b1120] z-20 shadow-[0_0_10px_rgba(245,158,11,0.8)]"></div>
+                <div class="w-full md:w-1/2 flex justify-center md:justify-start order-1 md:order-2">
+                    <div class="w-16 h-16 rounded-2xl bg-amber-500/10 flex items-center justify-center text-amber-400 border border-amber-500/20 group-hover:bg-amber-500 group-hover:text-white transition-all duration-500 shadow-[0_0_25px_rgba(245,158,11,0.2)]">
+                        <i class="bi bi-tools text-3xl"></i>
                     </div>
-                    
-                    <h3 class="text-lg font-bold text-white mb-1">Broadcast</h3>
-                    <p class="text-[10px] font-medium text-rose-400 uppercase tracking-widest mb-3">TV & Film Production</p>
-                    
-                    <p class="text-xs text-gray-400 leading-relaxed">
-                        Studio kreatif untuk videografi, fotografi, tata cahaya, dan editing TV.
-                    </p>
                 </div>
             </div>
 
-            <div class="group w-full md:w-[calc(50%-1.25rem)] lg:w-[30%]" data-aos="fade-up" data-aos-delay="200">
-                <div class="h-full bg-[#111827] rounded-2xl p-6 border border-white/5 hover:border-purple-500/50 transition-all duration-300 relative overflow-hidden flex flex-col items-center text-center shadow-lg hover:shadow-purple-500/20 hover:-translate-y-1">
-                    <div class="absolute top-0 w-16 h-[2px] bg-purple-500 shadow-[0_0_15px_rgba(168,85,247,0.7)]"></div>
-                    
-                    <div class="w-14 h-14 rounded-xl bg-[#1e293b] flex items-center justify-center mb-4 text-gray-400 group-hover:text-white group-hover:scale-105 transition-all duration-300 border border-white/5 shadow-inner">
-                        <i class="bi bi-palette text-2xl"></i>
+            <div class="group relative flex flex-col md:flex-row items-center gap-6 md:gap-12 text-center md:text-left" data-aos="fade-right">
+                <div class="w-full md:w-1/2 flex justify-center md:justify-end order-1">
+                    <div class="w-16 h-16 rounded-2xl bg-emerald-500/10 flex items-center justify-center text-emerald-400 border border-emerald-500/20 group-hover:bg-emerald-500 group-hover:text-white transition-all duration-500 shadow-[0_0_25px_rgba(16,185,129,0.2)]">
+                        <i class="bi bi-people text-3xl"></i>
                     </div>
-                    
-                    <h3 class="text-lg font-bold text-white mb-1">Animasi 3D</h3>
-                    <p class="text-[10px] font-medium text-purple-400 uppercase tracking-widest mb-3">Creative Arts</p>
-                    
-                    <p class="text-xs text-gray-400 leading-relaxed">
-                        Rendering 3D, motion graphic, dan visual effect dengan perangkat presisi.
-                    </p>
+                </div>
+                <div class="hidden md:flex absolute left-1/2 -translate-x-1/2 w-3 h-3 rounded-full bg-emerald-500 border-4 border-[#0b1120] z-20 shadow-[0_0_10px_rgba(16,185,129,0.8)]"></div>
+                <div class="w-full md:w-1/2 order-2">
+                    <h3 class="text-xl font-bold text-white mb-1">Perkelas</h3>
+                    <p class="text-[10px] tracking-[0.2em] text-emerald-400 uppercase font-bold mb-2">Class Coordinator</p>
+                    <p class="text-gray-400 text-sm leading-relaxed max-w-sm mx-auto md:mx-0">Koordinator tingkat kelas yang mengelola pengajuan kolektif, monitoring absensi kelas, dan laporan grup.</p>
                 </div>
             </div>
 
-            <div class="group w-full md:w-[calc(50%-1.25rem)] lg:w-[30%]" data-aos="fade-up" data-aos-delay="300">
-                <div class="h-full bg-[#111827] rounded-2xl p-6 border border-white/5 hover:border-amber-500/50 transition-all duration-300 relative overflow-hidden flex flex-col items-center text-center shadow-lg hover:shadow-amber-500/20 hover:-translate-y-1">
-                    <div class="absolute top-0 w-16 h-[2px] bg-amber-500 shadow-[0_0_15px_rgba(245,158,11,0.7)]"></div>
-                    
-                    <div class="w-14 h-14 rounded-xl bg-[#1e293b] flex items-center justify-center mb-4 text-gray-400 group-hover:text-white group-hover:scale-105 transition-all duration-300 border border-white/5 shadow-inner">
-                        <i class="bi bi-wrench-adjustable text-2xl"></i>
-                    </div>
-                    
-                    <h3 class="text-lg font-bold text-white mb-1">Teknik Otomotif</h3>
-                    <p class="text-[10px] font-medium text-amber-400 uppercase tracking-widest mb-3">Vehicle Engineering</p>
-                    
-                    <p class="text-xs text-gray-400 leading-relaxed">
-                        Perawatan mesin, sistem injeksi, dan kelistrikan kendaraan ringan.
-                    </p>
+            <div class="group relative flex flex-col md:flex-row items-center gap-6 md:gap-12 text-center md:text-right" data-aos="fade-left">
+                <div class="w-full md:w-1/2 order-2 md:order-1">
+                    <h3 class="text-xl font-bold text-white mb-1">Persiswa</h3>
+                    <p class="text-[10px] tracking-[0.2em] text-rose-400 uppercase font-bold mb-2">Individual User</p>
+                    <p class="text-gray-400 text-sm leading-relaxed max-w-sm mx-auto md:ml-auto md:mr-0">Akses personal siswa untuk melihat profil, riwayat peminjaman mandiri, dan monitoring progres individu.</p>
                 </div>
-            </div>
-
-            <div class="group w-full md:w-[calc(50%-1.25rem)] lg:w-[30%]" data-aos="fade-up" data-aos-delay="400">
-                <div class="h-full bg-[#111827] rounded-2xl p-6 border border-white/5 hover:border-cyan-500/50 transition-all duration-300 relative overflow-hidden flex flex-col items-center text-center shadow-lg hover:shadow-cyan-500/20 hover:-translate-y-1">
-                    <div class="absolute top-0 w-16 h-[2px] bg-cyan-500 shadow-[0_0_15px_rgba(6,182,212,0.7)]"></div>
-                    
-                    <div class="w-14 h-14 rounded-xl bg-[#1e293b] flex items-center justify-center mb-4 text-gray-400 group-hover:text-white group-hover:scale-105 transition-all duration-300 border border-white/5 shadow-inner">
-                        <i class="bi bi-fire text-2xl"></i>
+                <div class="hidden md:flex absolute left-1/2 -translate-x-1/2 w-3 h-3 rounded-full bg-rose-500 border-4 border-[#0b1120] z-20 shadow-[0_0_10px_rgba(244,63,94,0.8)]"></div>
+                <div class="w-full md:w-1/2 flex justify-center md:justify-start order-1 md:order-2">
+                    <div class="w-16 h-16 rounded-2xl bg-rose-500/10 flex items-center justify-center text-rose-400 border border-rose-500/20 group-hover:bg-rose-500 group-hover:text-white transition-all duration-500 shadow-[0_0_25px_rgba(244,63,94,0.2)]">
+                        <i class="bi bi-person-badge text-3xl"></i>
                     </div>
-                    
-                    <h3 class="text-lg font-bold text-white mb-1">Teknik Pengelasan</h3>
-                    <p class="text-[10px] font-medium text-cyan-400 uppercase tracking-widest mb-3">Welding Engineering</p>
-                    
-                    <p class="text-xs text-gray-400 leading-relaxed">
-                        Fabrikasi logam dan konstruksi baja dengan metode las modern.
-                    </p>
                 </div>
             </div>
 

@@ -14,52 +14,36 @@ class DashboardController extends Controller
     {
         $user = Auth::user();
 
-        // 1. Ambil ID semua jurusan yang menjadi tanggung jawab Toolman ini
-        $managedDeptIds = $user->assignedDepartments->pluck('id');
+        // Karena ini Librify (Perpustakaan Universal), Petugas ngurusin SEMUA sirkulasi.
+        // Tidak ada lagi batasan wilayah/jurusan.
 
-        // 2. Hitung Statistik Utama (Hanya untuk wilayah tanggung jawabnya)
+        // 1. Hitung Statistik Utama (Global / Seluruh Sistem)
         $stats = [
-            // Antrean request dari siswa di jurusan yang dia kelola
-            'pending' => Loan::where('status', 'pending')
-                            ->whereHas('user', function($q) use ($managedDeptIds) {
-                                $q->whereIn('department_id', $managedDeptIds);
-                            })->count(),
+            // Antrean request peminjaman buku dari semua member
+            'pending' => Loan::where('status', 'pending')->count(),
 
-            // Peminjaman aktif milik jurusannya
-            'active'  => Loan::where('status', 'approved')
-                            ->whereHas('user', function($q) use ($managedDeptIds) {
-                                $q->whereIn('department_id', $managedDeptIds);
-                            })->count(),
+            // Peminjaman aktif (buku yang masih dibawa peminjam)
+            'active'  => Loan::where('status', 'approved')->count(),
 
-            // Pengembalian hari ini di jurusannya
+            // Buku yang dikembalikan hari ini
             'returned_today' => Loan::where('status', 'returned')
                                     ->whereDate('updated_at', Carbon::today())
-                                    ->whereHas('user', function($q) use ($managedDeptIds) {
-                                        $q->whereIn('department_id', $managedDeptIds);
-                                    })->count(),
+                                    ->count(),
 
-            // Total unit barang milik jurusannya yang sedang berada di luar
-            'total_items_out' => Loan::where('status', 'approved')
-                                    ->whereHas('user', function($q) use ($managedDeptIds) {
-                                        $q->whereIn('department_id', $managedDeptIds);
-                                    })->sum('quantity'),
+            // Total eksemplar buku yang sedang berada di luar perpustakaan
+            'total_items_out' => Loan::where('status', 'approved')->sum('quantity'),
         ];
 
-        // 3. Ambil 5 Transaksi Terbaru (Hanya dari siswa di wilayahnya)
-        $recentLoans = Loan::with(['user.department', 'item'])
-                            ->whereHas('user', function($q) use ($managedDeptIds) {
-                                $q->whereIn('department_id', $managedDeptIds);
-                            })
+        // 2. Ambil 5 Transaksi Terbaru (Global)
+        // Kita load relasi user dan item biar datanya lengkap pas ditampilin
+        $recentLoans = Loan::with(['user', 'item'])
                             ->latest()
                             ->take(5)
                             ->get();
 
-        // 4. Ambil Barang yang Stoknya Tipis (Hanya barang milik kategorinya jurusan tersebut)
-        // Barang dianggap milik jurusannya jika kategori barang tersebut terhubung ke departemen si Toolman
-        $lowStockItems = Item::where('stock', '<=', 5)
-                            ->whereHas('category.departments', function($q) use ($managedDeptIds) {
-                                $q->whereIn('departments.id', $managedDeptIds);
-                            })->get();
+        // 3. Ambil Buku yang Stoknya Tipis (Global)
+        // Mengingatkan petugas kalau ada buku yang stok fisiknya tinggal sedikit
+        $lowStockItems = Item::where('stock', '<=', 5)->get();
 
         return view('toolman.dashboard.index', compact('stats', 'recentLoans', 'lowStockItems'));
     }

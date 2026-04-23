@@ -35,18 +35,18 @@
     
     {{-- Brand Logo & Close Button --}}
     <div class="h-20 flex items-center justify-between px-6 border-b border-slate-900 bg-slate-950/50 backdrop-blur-sm">
-        <a href="{{ route('siswa.dashboard') }}" class="flex items-center gap-3 group text-left">
+        <a href="{{ route('siswa.dashboard') }}" class="flex items-center gap-3 group text-left leading-none">
             <div class="w-10 h-10 rounded-xl bg-blue-600 flex items-center justify-center text-white shadow-lg shadow-blue-500/30 group-hover:scale-110 transition-transform duration-300">
-                <i class="bi bi-mortarboard-fill text-xl"></i>
+                <i class="bi bi-book-half text-xl"></i>
             </div>
-            <div>
-                <h1 class="text-lg font-black text-white tracking-wide leading-none font-jakarta uppercase">TEKNILOG</h1>
-                <p class="text-[9px] text-blue-500 uppercase font-bold tracking-widest mt-1">Siswa Kelas</p>
+            <div class="text-left leading-none">
+                <h1 class="text-lg font-black text-white tracking-wide leading-none font-jakarta uppercase">LIBRIFY</h1>
+                <p class="text-[9px] text-blue-500 uppercase font-bold tracking-widest mt-1.5 leading-none">Member Portal</p>
             </div>
         </a>
 
-        {{-- TOMBOL CLOSE (Muncul di Mobile saat Sidebar Terbuka) --}}
-        <button @click="sidebarOpen = false" class="md:hidden text-blue-400 hover:text-white transition-colors p-2">
+        {{-- TOMBOL CLOSE (Mobile Only) --}}
+        <button @click="sidebarOpen = false" class="md:hidden text-blue-400 hover:text-white transition-colors p-2 leading-none">
             <i class="bi bi-x-lg text-2xl"></i>
         </button>
     </div>
@@ -55,41 +55,41 @@
         
         {{-- Section 1: Utama --}}
         <div>
-            <h3 class="px-2 mb-4 text-[10px] font-black text-blue-500 uppercase tracking-[0.2em]">Navigasi Kelas</h3>
+            <h3 class="px-2 mb-4 text-[10px] font-black text-blue-500 uppercase tracking-[0.2em] leading-none text-left">Navigasi Utama</h3>
             <ul class="space-y-1.5 text-left">
                 <li>
                     <a href="{{ route('siswa.dashboard') }}" 
                        class="flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200 group {{ request()->routeIs('siswa.dashboard') ? 'bg-gradient-to-r from-blue-600 to-blue-500 text-white shadow-lg shadow-blue-900/40' : 'hover:bg-slate-900 hover:text-white' }}">
                         <i class="bi bi-grid-1x2-fill w-5 text-center text-lg {{ request()->routeIs('siswa.dashboard') ? '' : 'text-blue-400 group-hover:text-blue-200' }}"></i>
-                        <span class="font-bold text-sm">Dashboard</span>
+                        <span class="font-bold text-sm">Beranda Kelas</span>
                     </a>
                 </li>
             </ul>
         </div>
 
-        {{-- Section 2: Layanan Aset --}}
+        {{-- Section 2: Layanan Koleksi --}}
         <div>
-            <h3 class="px-2 mb-4 text-[10px] font-black text-blue-500 uppercase tracking-[0.2em]">Layanan Aset</h3>
+            <h3 class="px-2 mb-4 text-[10px] font-black text-blue-500 uppercase tracking-[0.2em] leading-none text-left">Sirkulasi Buku</h3>
             <ul class="space-y-1.5 text-left">
                 <li>
                     <a href="{{ route('siswa.request') }}" 
                        class="flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200 group hover:translate-x-1 {{ request()->routeIs('siswa.request') ? 'bg-slate-900 text-white border-l-4 border-blue-500' : 'hover:bg-slate-900 hover:text-white' }}">
-                        <i class="bi bi-box-fill w-5 text-center text-lg {{ request()->routeIs('siswa.request') ? 'text-blue-400' : 'text-blue-500 group-hover:text-blue-300' }} transition-colors"></i>
-                        <span class="font-bold text-sm">Booking Alat</span>
+                        <i class="bi bi-journal-bookmark-fill w-5 text-center text-lg {{ request()->routeIs('siswa.request') ? 'text-blue-400' : 'text-blue-500 group-hover:text-blue-300' }} transition-colors"></i>
+                        <span class="font-bold text-sm">Pinjam Buku</span>
                     </a>
                 </li>
             </ul>
         </div>
 
-        {{-- Section 3: Kendala --}}
+        {{-- Section 3: Bantuan --}}
         <div>
-            <h3 class="px-2 mb-4 text-[10px] font-black text-blue-500 uppercase tracking-[0.2em]">Kendala</h3>
+            <h3 class="px-2 mb-4 text-[10px] font-black text-blue-500 uppercase tracking-[0.2em] leading-none text-left">Pusat Bantuan</h3>
             <ul class="space-y-1.5 text-left">
                 <li>
                     <a href="{{ route('siswa.laporan') }}" 
                        class="flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200 group hover:translate-x-1 {{ request()->routeIs('siswa.laporan') ? 'bg-slate-900 text-white border-l-4 border-blue-500' : 'hover:bg-slate-900 hover:text-white' }}">
-                        <i class="bi bi-clipboard-x-fill w-5 text-center text-lg {{ request()->routeIs('siswa.laporan') ? 'text-blue-400' : 'text-blue-500 group-hover:text-blue-300' }} transition-colors"></i>
-                        <span class="font-bold text-sm">Lapor Masalah</span>
+                        <i class="bi bi-exclamation-octagon-fill w-5 text-center text-lg {{ request()->routeIs('siswa.laporan') ? 'text-blue-400' : 'text-blue-500 group-hover:text-blue-300' }} transition-colors"></i>
+                        <span class="font-bold text-sm">Lapor Kendala</span>
                     </a>
                 </li>
             </ul>
@@ -101,16 +101,14 @@
     <div class="p-4 border-t border-slate-900 bg-slate-950/30 text-left">
         <div class="flex items-center gap-3 p-2 rounded-2xl hover:bg-slate-900 transition-colors group cursor-pointer border border-transparent hover:border-slate-800">
             <div class="relative">
-                <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-blue-500 to-sky-500 flex items-center justify-center text-white font-black text-sm ring-2 ring-slate-950 group-hover:ring-blue-500 transition-all text-center uppercase shadow-inner">
-                    {{ substr(Auth::user()->name, 0, 2) }}
-                </div>
+                <img src="{{ Auth::user()->profile_photo_url }}" class="w-10 h-10 rounded-xl object-cover ring-2 ring-slate-950 group-hover:ring-blue-500 transition-all shadow-inner">
                 <div class="absolute -bottom-1 -right-1 w-4 h-4 bg-blue-500 border-2 border-slate-950 rounded-full flex items-center justify-center">
                     <div class="w-1.5 h-1.5 bg-white rounded-full animate-pulse"></div>
                 </div>
             </div>
             <div class="overflow-hidden leading-tight text-left">
-                <p class="text-sm font-black text-white truncate group-hover:text-blue-300 transition-colors uppercase font-jakarta tracking-tight">{{ Auth::user()->name }}</p>
-                <p class="text-[9px] text-blue-500/80 truncate uppercase font-bold tracking-[0.1em] mt-0.5">SMKN 1 CIOMAS</p>
+                <p class="text-sm font-black text-white truncate group-hover:text-blue-300 transition-colors uppercase font-jakarta tracking-tight">{{ Str::limit(Auth::user()->name, 12) }}</p>
+                <p class="text-[9px] text-blue-500/80 truncate uppercase font-bold tracking-[0.1em] mt-0.5">{{ Auth::user()->role === 'class' ? 'Akun Kelas' : 'Siswa' }}</p>
             </div>
         </div>
     </div>

@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>TekniLog | Digital Workshop Management SMK</title>
+   <title>Librify | Sistem Perpustakaan Digital</title>
 
     {{-- Tailwind CSS --}}
     <script src="https://cdn.tailwindcss.com"></script>
@@ -99,21 +99,18 @@
         }"
     >
         
-        <a href="#" class="flex items-center gap-3 group shrink-0">
-            <div class="relative w-10 h-10 rounded-full bg-gradient-to-br from-[#1e1b4b] to-indigo-900 border border-indigo-500/30 flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300 overflow-hidden">
-                <div class="absolute inset-0 bg-indigo-500/20 blur-md"></div>
-                <span class="relative text-white font-bold text-lg font-heading">TL</span>
-            </div>
-            <div class="flex flex-col">
-                <span class="text-xl font-bold font-heading tracking-tight text-white leading-none group-hover:text-indigo-200 transition-colors">
-                    Tekni<span class="text-indigo-400">Log</span>
-                </span>
-                <span class="text-[9px] text-gray-400 tracking-[0.2em] uppercase mt-0.5" 
-                      :class="{ 'hidden sm:block': scrolled }">
-                    SMKN 1 CIOMAS
-                </span>
-            </div>
-        </a>
+      <a href="#" class="flex items-center gap-3 group shrink-0">
+    <div class="relative w-10 h-10 rounded-full bg-gradient-to-br from-[#1e1b4b] to-indigo-900 border border-indigo-500/30 flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300 overflow-hidden">
+        <div class="absolute inset-0 bg-indigo-500/20 blur-md"></div>
+        <span class="relative text-white font-bold text-lg font-heading">LB</span>
+    </div>
+    
+    <div>
+        <span class="text-xl font-bold font-heading tracking-tight text-white leading-none group-hover:text-indigo-200 transition-colors">
+            Libri<span class="text-indigo-400">fy</span>
+        </span>
+    </div>
+</a>
 
         <nav class="hidden md:flex items-center justify-center absolute left-1/2 -translate-x-1/2">
             <div class="flex items-center gap-1 p-1 rounded-full bg-white/5 border border-white/5 backdrop-blur-sm shadow-inner">
@@ -191,16 +188,16 @@
                         <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-indigo-400 opacity-75"></span>
                         <span class="relative inline-flex rounded-full h-1.5 w-1.5 bg-indigo-500"></span>
                     </span>
-                    System Ecosystem v2.0
+                    Librify System v2.0
                 </div>
 
                 <h1 class="text-4xl md:text-5xl lg:text-6xl font-black leading-[1.1] mb-6 tracking-tight text-white">
-                    Kendali Aset <br>
+                    Sistem Perpustakaan <br>
                     <span class="text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 to-cyan-400">Digital Terpadu.</span>
                 </h1>
                 
                 <p class="text-gray-400 text-sm md:text-base leading-relaxed mb-10 opacity-80">
-                    Solusi manajemen inventaris modern yang dirancang untuk transparansi dan kecepatan akses data bagi Admin, Toolman, hingga Siswa.
+                    Solusi manajemen perpustakaan modern yang dirancang untuk kemudahan eksplorasi buku, transparansi, dan kecepatan akses data bagi Admin, Petugas, hingga Siswa.
                 </p>
 
                 <div class="grid grid-cols-2 gap-6 mb-12">
@@ -209,20 +206,20 @@
                             <i class="bi bi-qr-code-scan text-lg"></i>
                             <span class="text-xs font-bold uppercase tracking-wider text-white">Scan & Go</span>
                         </div>
-                        <p class="text-[11px] text-gray-500 leading-normal">Peminjaman kilat tanpa birokrasi kertas.</p>
+                        <p class="text-[11px] text-gray-500 leading-normal">Peminjaman buku kilat dengan sistem QR cerdas.</p>
                     </div>
                     <div class="space-y-2">
                         <div class="flex items-center gap-2 text-cyan-400 justify-center lg:justify-start">
-                            <i class="bi bi-shield-check text-lg"></i>
-                            <span class="text-xs font-bold uppercase tracking-wider text-white">Real-Time</span>
+                            <i class="bi bi-star-half text-lg"></i>
+                            <span class="text-xs font-bold uppercase tracking-wider text-white">Trust Score</span>
                         </div>
-                        <p class="text-[11px] text-gray-500 leading-normal">Pantau status alat secara live & akurat.</p>
+                        <p class="text-[11px] text-gray-500 leading-normal">Pantau status peminjaman & kedisiplinan secara live.</p>
                     </div>
                 </div>
 
                 <div class="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-5">
                     <a href="#katalog" class="w-full sm:w-auto bg-indigo-600 hover:bg-indigo-500 text-white px-9 py-3.5 rounded-xl font-bold transition-all shadow-lg shadow-indigo-600/20 text-xs flex items-center justify-center gap-3 active:scale-95">
-                        Mulai Akses <i class="bi bi-arrow-right"></i>
+                        Mulai Eksplorasi <i class="bi bi-arrow-right"></i>
                     </a>
                 </div>
             </div>
@@ -235,10 +232,10 @@
                     <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-30">
                         <div class="bg-[#0f172a] p-5 rounded-[2rem] border border-white/10 shadow-2xl flex flex-col items-center">
                             <div class="w-14 h-14 rounded-2xl bg-gradient-to-tr from-indigo-500 to-indigo-700 flex items-center justify-center mb-2 relative">
-                                <i class="bi bi-cpu text-3xl text-white"></i>
+                                <i class="bi bi-journal-bookmark-fill text-3xl text-white"></i>
                                 <div class="absolute -inset-1 bg-indigo-500/30 rounded-2xl blur-md animate-pulse"></div>
                             </div>
-                            <p class="text-[9px] font-bold text-gray-500 uppercase tracking-widest text-center">Core System</p>
+                            <p class="text-[9px] font-bold text-gray-500 uppercase tracking-widest text-center">Library Core</p>
                         </div>
                     </div>
 
@@ -254,16 +251,16 @@
                     <div class="absolute -bottom-2 left-2 animate-[float_8s_ease-in-out_infinite_1s] z-40">
                         <div class="bg-white/5 backdrop-blur-xl p-3 px-4 rounded-xl border border-white/10 flex items-center gap-3 shadow-xl">
                             <div class="w-6 h-6 rounded-full bg-amber-500/20 flex items-center justify-center text-amber-500 text-[10px]">
-                                <i class="bi bi-tools"></i>
+                                <i class="bi bi-person-badge-fill"></i>
                             </div>
-                            <span class="text-[10px] font-bold text-white uppercase tracking-tight">Toolman Verifier</span>
+                            <span class="text-[10px] font-bold text-white uppercase tracking-tight">Petugas Verifier</span>
                         </div>
                     </div>
 
                     <div class="absolute top-1/4 -left-6 animate-[float_7s_ease-in-out_infinite_0.5s] z-20">
                         <div class="bg-white/5 backdrop-blur-md p-2 px-3 rounded-lg border border-white/5 shadow-lg flex items-center gap-2">
                             <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
-                            <span class="text-[9px] text-gray-400 font-medium">Activity Monitoring</span>
+                            <span class="text-[9px] text-gray-400 font-medium">Trust Score Monitor</span>
                         </div>
                     </div>
 
@@ -321,7 +318,7 @@
             </h2>
             <div class="h-1 w-12 bg-indigo-500 mx-auto rounded-full mb-6"></div>
             <p class="text-gray-400 text-sm md:text-base leading-relaxed">
-                Sistem manajemen terintegrasi dengan pembagian tugas yang spesifik untuk efisiensi operasional.
+                Sistem perpustakaan terintegrasi dengan pembagian tugas yang spesifik untuk efisiensi operasional dan transparansi.
             </p>
         </div>
 
@@ -341,20 +338,20 @@
                 <div class="w-full md:w-1/2 order-2">
                     <h3 class="text-xl font-bold text-white mb-1">Administrator</h3>
                     <p class="text-[10px] tracking-[0.2em] text-indigo-400 uppercase font-bold mb-2">Super User Access</p>
-                    <p class="text-gray-400 text-sm leading-relaxed max-w-sm mx-auto md:mx-0">Otoritas penuh dalam manajemen database, konfigurasi sistem, monitoring seluruh akun, dan rekapitulasi data global.</p>
+                    <p class="text-gray-400 text-sm leading-relaxed max-w-sm mx-auto md:mx-0">Otoritas penuh dalam manajemen database, konfigurasi sistem, pendaftaran akun petugas, dan rekapitulasi data perpustakaan global.</p>
                 </div>
             </div>
 
             <div class="group relative flex flex-col md:flex-row items-center gap-6 md:gap-12 text-center md:text-right" data-aos="fade-left">
                 <div class="w-full md:w-1/2 order-2 md:order-1">
-                    <h3 class="text-xl font-bold text-white mb-1">Toolman</h3>
-                    <p class="text-[10px] tracking-[0.2em] text-amber-400 uppercase font-bold mb-2">Inventory Manager</p>
-                    <p class="text-gray-400 text-sm leading-relaxed max-w-sm mx-auto md:ml-auto md:mr-0">Bertanggung jawab atas manajemen alat (tools), verifikasi peminjaman, pengecekan kondisi aset, dan inventarisasi lab.</p>
+                    <h3 class="text-xl font-bold text-white mb-1">Petugas Perpustakaan</h3>
+                    <p class="text-[10px] tracking-[0.2em] text-amber-400 uppercase font-bold mb-2">Circulation Manager</p>
+                    <p class="text-gray-400 text-sm leading-relaxed max-w-sm mx-auto md:ml-auto md:mr-0">Bertanggung jawab atas manajemen katalog buku, verifikasi sirkulasi peminjaman/pengembalian, pengecekan kondisi buku, dan evaluasi Trust Score.</p>
                 </div>
                 <div class="hidden md:flex absolute left-1/2 -translate-x-1/2 w-3 h-3 rounded-full bg-amber-500 border-4 border-[#0b1120] z-20 shadow-[0_0_10px_rgba(245,158,11,0.8)]"></div>
                 <div class="w-full md:w-1/2 flex justify-center md:justify-start order-1 md:order-2">
                     <div class="w-16 h-16 rounded-2xl bg-amber-500/10 flex items-center justify-center text-amber-400 border border-amber-500/20 group-hover:bg-amber-500 group-hover:text-white transition-all duration-500 shadow-[0_0_25px_rgba(245,158,11,0.2)]">
-                        <i class="bi bi-tools text-3xl"></i>
+                        <i class="bi bi-journal-check text-3xl"></i>
                     </div>
                 </div>
             </div>
@@ -367,17 +364,17 @@
                 </div>
                 <div class="hidden md:flex absolute left-1/2 -translate-x-1/2 w-3 h-3 rounded-full bg-emerald-500 border-4 border-[#0b1120] z-20 shadow-[0_0_10px_rgba(16,185,129,0.8)]"></div>
                 <div class="w-full md:w-1/2 order-2">
-                    <h3 class="text-xl font-bold text-white mb-1">Perkelas</h3>
-                    <p class="text-[10px] tracking-[0.2em] text-emerald-400 uppercase font-bold mb-2">Class Coordinator</p>
-                    <p class="text-gray-400 text-sm leading-relaxed max-w-sm mx-auto md:mx-0">Koordinator tingkat kelas yang mengelola pengajuan kolektif, monitoring absensi kelas, dan laporan grup.</p>
+                    <h3 class="text-xl font-bold text-white mb-1">Wali Kelas & Guru</h3>
+                    <p class="text-[10px] tracking-[0.2em] text-emerald-400 uppercase font-bold mb-2">Academic Monitor</p>
+                    <p class="text-gray-400 text-sm leading-relaxed max-w-sm mx-auto md:mx-0">Memantau aktivitas literasi siswa, mengecek riwayat peminjaman buku kelas, serta memonitor Trust Score dan kedisiplinan siswa didikannya.</p>
                 </div>
             </div>
 
             <div class="group relative flex flex-col md:flex-row items-center gap-6 md:gap-12 text-center md:text-right" data-aos="fade-left">
                 <div class="w-full md:w-1/2 order-2 md:order-1">
-                    <h3 class="text-xl font-bold text-white mb-1">Persiswa</h3>
-                    <p class="text-[10px] tracking-[0.2em] text-rose-400 uppercase font-bold mb-2">Individual User</p>
-                    <p class="text-gray-400 text-sm leading-relaxed max-w-sm mx-auto md:ml-auto md:mr-0">Akses personal siswa untuk melihat profil, riwayat peminjaman mandiri, dan monitoring progres individu.</p>
+                    <h3 class="text-xl font-bold text-white mb-1">Siswa (Peminjam)</h3>
+                    <p class="text-[10px] tracking-[0.2em] text-rose-400 uppercase font-bold mb-2">Library Member</p>
+                    <p class="text-gray-400 text-sm leading-relaxed max-w-sm mx-auto md:ml-auto md:mr-0">Akses personal untuk mengeksplorasi katalog, melakukan request peminjaman mandiri, dan melihat riwayat baca serta Trust Score individu.</p>
                 </div>
                 <div class="hidden md:flex absolute left-1/2 -translate-x-1/2 w-3 h-3 rounded-full bg-rose-500 border-4 border-[#0b1120] z-20 shadow-[0_0_10px_rgba(244,63,94,0.8)]"></div>
                 <div class="w-full md:w-1/2 flex justify-center md:justify-start order-1 md:order-2">
@@ -390,8 +387,7 @@
         </div>
     </div>
 </section>
-
-     <section id="alur" class="py-20 bg-[#0b1120] relative overflow-hidden border-t border-white/5">
+   <section id="alur" class="py-20 bg-[#0b1120] relative overflow-hidden border-t border-white/5">
     
     <div class="absolute top-0 right-0 w-[400px] h-[400px] bg-indigo-600/5 rounded-full blur-[80px] pointer-events-none"></div>
 
@@ -405,16 +401,18 @@
                     Proses Peminjaman <br> <span class="text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 to-cyan-400">Terstruktur & Disiplin.</span>
                 </h2>
                 
-                <div class="space-y-6"> <div class="group flex gap-5 relative">
+                <div class="space-y-6"> 
+                    
+                    <div class="group flex gap-5 relative">
                         <div class="absolute left-[19px] top-10 bottom-[-24px] w-px bg-indigo-500/20 group-last:hidden"></div>
                         
                         <div class="relative w-10 h-10 rounded-lg bg-[#1e293b] border border-indigo-500/30 flex items-center justify-center text-indigo-400 shrink-0 shadow-[0_0_10px_rgba(99,102,241,0.2)]">
-                            <i class="bi bi-shield-lock-fill text-lg"></i>
+                            <i class="bi bi-book-fill text-lg"></i>
                         </div>
                         <div>
-                            <h4 class="text-base font-bold text-white mb-1 group-hover:text-indigo-300 transition-colors">1. Akses Spesifik Jurusan</h4>
+                            <h4 class="text-base font-bold text-white mb-1 group-hover:text-indigo-300 transition-colors">1. Eksplorasi Katalog Universal</h4>
                             <p class="text-xs md:text-sm text-gray-400 leading-relaxed max-w-sm">
-                                Sistem memfilter katalog. Siswa <span class="text-indigo-300">hanya bisa meminjam alat</span> sesuai kompetensi keahlian masing-masing.
+                                Sistem menyediakan katalog terbuka. Siswa <span class="text-indigo-300">dapat meminjam buku apa saja</span> yang tersedia di perpustakaan tanpa batasan khusus.
                             </p>
                         </div>
                     </div>
@@ -426,29 +424,29 @@
                             <i class="bi bi-person-badge-fill text-lg"></i>
                         </div>
                         <div>
-                            <h4 class="text-base font-bold text-white mb-1 group-hover:text-blue-300 transition-colors">2. Request & Validasi Toolman</h4>
+                            <h4 class="text-base font-bold text-white mb-1 group-hover:text-blue-300 transition-colors">2. Request & Validasi Petugas</h4>
                             <p class="text-xs md:text-sm text-gray-400 leading-relaxed max-w-sm">
-                                Siswa kirim request via aplikasi. Toolman validasi, siapkan barang, dan <span class="text-blue-300">scan serah terima</span>.
+                                Siswa kirim request via aplikasi. Petugas memvalidasi, menyiapkan buku, dan <span class="text-blue-300">mencatat serah terima</span> peminjaman.
                             </p>
                         </div>
                     </div>
 
                     <div class="group flex gap-5 relative">
                         <div class="relative w-10 h-10 rounded-lg bg-[#1e293b] border border-rose-500/30 flex items-center justify-center text-rose-400 shrink-0 shadow-[0_0_10px_rgba(244,63,94,0.2)]">
-                            <i class="bi bi-exclamation-triangle-fill text-lg"></i>
+                            <i class="bi bi-shield-exclamation text-lg"></i>
                         </div>
                         <div>
-                            <h4 class="text-base font-bold text-white mb-1 group-hover:text-rose-300 transition-colors">3. Cek Kondisi & Sanksi</h4>
+                            <h4 class="text-base font-bold text-white mb-1 group-hover:text-rose-300 transition-colors">3. Pengembalian & Trust Score</h4>
                             <p class="text-xs md:text-sm text-gray-400 leading-relaxed max-w-sm mb-2">
-                                Toolman menetapkan 3 status kondisi barang:
+                                Petugas mengevaluasi status pengembalian buku:
                             </p>
                             <div class="flex flex-wrap gap-2 mb-2">
-                                <span class="px-1.5 py-0.5 rounded bg-green-500/10 border border-green-500/20 text-[9px] font-bold text-green-400 uppercase">Aman</span>
-                                <span class="px-1.5 py-0.5 rounded bg-yellow-500/10 border border-yellow-500/20 text-[9px] font-bold text-yellow-400 uppercase">Rusak</span>
-                                <span class="px-1.5 py-0.5 rounded bg-red-500/10 border border-red-500/20 text-[9px] font-bold text-red-400 uppercase">Hilang</span>
+                                <span class="px-1.5 py-0.5 rounded bg-green-500/10 border border-green-500/20 text-[9px] font-bold text-green-400 uppercase">Tepat Waktu</span>
+                                <span class="px-1.5 py-0.5 rounded bg-yellow-500/10 border border-yellow-500/20 text-[9px] font-bold text-yellow-400 uppercase">Telat</span>
+                                <span class="px-1.5 py-0.5 rounded bg-red-500/10 border border-red-500/20 text-[9px] font-bold text-red-400 uppercase">Rusak/Hilang</span>
                             </div>
                             <p class="text-[10px] text-rose-300/80 italic border-l-2 border-rose-500/30 pl-2">
-                                *Rusak/Hilang = <b>Denda Kolektif</b> dibebankan ke Kelas.
+                                *Keterlambatan atau kerusakan akan <b>menurunkan Trust Score</b> dan dikenakan sanksi oleh Petugas.
                             </p>
                         </div>
                     </div>
@@ -461,18 +459,18 @@
 
                 <div class="glass p-5 rounded-2xl flex flex-col items-center text-center border border-white/5 hover:border-indigo-500/30 transition-all duration-300">
                     <div class="w-8 h-8 mb-3 rounded-full bg-indigo-500/20 text-indigo-400 flex items-center justify-center">
-                        <i class="bi bi-funnel text-sm"></i>
+                        <i class="bi bi-grid-fill text-sm"></i>
                     </div>
-                    <p class="text-xl font-bold text-white mb-0.5">Auto</p>
-                    <p class="text-[9px] font-bold text-gray-500 uppercase tracking-widest">Filter Jurusan</p>
+                    <p class="text-xl font-bold text-white mb-0.5">Bebas</p>
+                    <p class="text-[9px] font-bold text-gray-500 uppercase tracking-widest">Akses Semua Buku</p>
                 </div>
 
                 <div class="glass p-5 rounded-2xl flex flex-col items-center text-center mt-6 border border-white/5 hover:border-blue-500/30 transition-all duration-300">
                     <div class="w-8 h-8 mb-3 rounded-full bg-blue-500/20 text-blue-400 flex items-center justify-center">
-                        <i class="bi bi-check2-circle text-sm"></i>
+                        <i class="bi bi-check-all text-sm"></i>
                     </div>
                     <p class="text-xl font-bold text-white mb-0.5">100%</p>
-                    <p class="text-[9px] font-bold text-gray-500 uppercase tracking-widest">Validasi Toolman</p>
+                    <p class="text-[9px] font-bold text-gray-500 uppercase tracking-widest">Validasi Petugas</p>
                 </div>
 
                 <div class="glass p-5 rounded-2xl flex flex-col items-center text-center border border-white/5 hover:border-green-500/30 transition-all duration-300">
@@ -486,19 +484,19 @@
                 <div class="glass p-5 rounded-2xl flex flex-col items-center text-center mt-6 border border-white/5 hover:border-rose-500/30 transition-all duration-300 relative overflow-hidden group">
                     <div class="absolute inset-0 bg-rose-500/5 group-hover:bg-rose-500/10 transition-colors"></div>
                     <div class="w-8 h-8 mb-3 rounded-full bg-rose-500/20 text-rose-400 flex items-center justify-center relative z-10">
-                        <i class="bi bi-cash-coin text-sm"></i>
+                        <i class="bi bi-star-half text-sm"></i>
                     </div>
-                    <p class="text-xl font-bold text-white mb-0.5 relative z-10">Sanksi</p>
-                    <p class="text-[9px] font-bold text-rose-300 uppercase tracking-widest relative z-10">Denda Per Kelas</p>
+                    <p class="text-xl font-bold text-white mb-0.5 relative z-10">Sistem</p>
+                    <p class="text-[9px] font-bold text-rose-300 uppercase tracking-widest relative z-10">Trust Score</p>
                 </div>
 
             </div>
-            </div>
+        </div>
     </div>
 </section>
     </main>
 
-   <footer class="pt-20 pb-10 bg-[#020617] border-t border-white/5 relative overflow-hidden font-sans">
+  <footer class="pt-20 pb-10 bg-[#020617] border-t border-white/5 relative overflow-hidden font-sans">
     
     <div class="absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-5xl h-[500px] bg-indigo-900/10 rounded-full blur-[120px] pointer-events-none"></div>
 
@@ -509,14 +507,14 @@
             <div class="lg:col-span-1">
                 <a href="#" class="flex items-center gap-3 mb-6">
                     <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-[#1e1b4b] to-indigo-900 border border-indigo-500/30 flex items-center justify-center shadow-lg">
-                        <span class="text-white font-bold text-lg font-heading">TL</span>
+                        <span class="text-white font-bold text-lg font-heading">LB</span>
                     </div>
                     <span class="text-xl font-bold font-heading tracking-tight text-white">
-                        Tekni<span class="text-indigo-400">Log</span>
+                        Libri<span class="text-indigo-400">fy</span>
                     </span>
                 </a>
                 <p class="text-gray-400 text-sm leading-relaxed mb-6">
-                    Sistem Manajemen Inventaris Alat & Bahan Praktek SMK Berbasis QR Code. Terintegrasi, transparan, dan akuntabel.
+                    Sistem Peminjaman Buku Perpustakaan Terpadu. Memudahkan eksplorasi, peminjaman, dan pelacakan buku secara transparan dan akuntabel.
                 </p>
                 <div class="flex gap-4">
                     <a href="#" class="w-8 h-8 rounded-full bg-white/5 flex items-center justify-center text-gray-400 hover:bg-indigo-600 hover:text-white transition-all"><i class="bi bi-instagram"></i></a>
@@ -537,10 +535,10 @@
                         <div>
                             <h5 class="text-white font-bold text-sm mb-1">Butuh Akun / Lupa Password?</h5>
                             <p class="text-xs text-gray-400 leading-relaxed mb-3">
-                                Untuk alasan keamanan, pendaftaran akun Siswa & Toolman dilakukan secara terpusat.
+                                Untuk alasan keamanan, pendaftaran akun Siswa & Petugas dilakukan secara terpusat.
                             </p>
                             <p class="text-xs text-indigo-300 font-medium">
-                                Silakan hubungi <span class="text-white font-bold underline decoration-indigo-500/50">Kepala Program Keahlian (Kaprog)</span> atau <span class="text-white font-bold underline decoration-indigo-500/50">Guru Produktif</span> jurusan masing-masing untuk mendapatkan akses login.
+                                Silakan hubungi <span class="text-white font-bold underline decoration-indigo-500/50">Petugas Perpustakaan</span> atau <span class="text-white font-bold underline decoration-indigo-500/50">Admin Sekolah</span> untuk mendapatkan akses login.
                             </p>
                         </div>
                     </div>
@@ -551,10 +549,10 @@
                 <h4 class="text-white font-bold mb-6">Menu Pintas</h4>
                 <ul class="space-y-3">
                     <li><a href="#home" class="text-sm text-gray-400 hover:text-indigo-400 transition-colors">Beranda</a></li>
-                    <li><a href="#jurusan" class="text-sm text-gray-400 hover:text-indigo-400 transition-colors">Daftar Jurusan</a></li>
+                    <li><a href="#katalog" class="text-sm text-gray-400 hover:text-indigo-400 transition-colors">Katalog Buku</a></li>
                     <li><a href="#alur" class="text-sm text-gray-400 hover:text-indigo-400 transition-colors">Alur Peminjaman</a></li>
-                    <li><a href="#katalog" class="text-sm text-gray-400 hover:text-indigo-400 transition-colors">Cek Katalog Alat</a></li>
-                    <li><a href="{{ route('login') }}" class="text-sm text-gray-400 hover:text-indigo-400 transition-colors">Login Staff</a></li>
+                    <li><a href="#trust-score" class="text-sm text-gray-400 hover:text-indigo-400 transition-colors">Cek Trust Score</a></li>
+                    <li><a href="{{ route('login') }}" class="text-sm text-gray-400 hover:text-indigo-400 transition-colors">Login Petugas</a></li>
                 </ul>
             </div>
 
@@ -562,8 +560,8 @@
 
         <div class="border-t border-white/5 pt-8 flex flex-col md:flex-row justify-between items-center gap-4">
             <p class="text-gray-500 text-xs text-center md:text-left">
-                &copy; {{ date('Y') }} TekniLog SMK. All rights reserved. <br class="md:hidden">
-                Developed by <span class="text-gray-400 font-bold">RPL Students.</span>
+                &copy; {{ date('Y') }} Librify. All rights reserved. <br class="md:hidden">
+                Developed by <span class="text-gray-400 font-bold">Librify Team.</span>
             </p>
             <div class="flex gap-6">
                 <a href="#" class="text-xs text-gray-500 hover:text-white transition-colors">Kebijakan Privasi</a>

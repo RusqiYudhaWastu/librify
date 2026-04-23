@@ -4,7 +4,7 @@ namespace Database\Seeders;
 
 use App\Models\User;
 use App\Models\ClassRoom;
-use App\Models\Department; // ✅ Jangan lupa import ini
+// Model Department (Jurusan) UDAH DIHAPUS karena Librify bersifat Universal
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
@@ -16,78 +16,81 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        // 1. Buat Data JURUSAN (Department) Dulu (Wajib ada sebelum bikin Kelas)
-        $jurusanTKJ = Department::create([
-            'name' => 'Teknik Komputer Jaringan',
-            'slug' => Str::slug('Teknik Komputer Jaringan')
-        ]);
-
-        $jurusanTKR = Department::create([
-            'name' => 'Teknik Kendaraan Ringan',
-            'slug' => Str::slug('Teknik Kendaraan Ringan')
-        ]);
-
-        // 2. Buat Data KELAS (Sekarang pakai department_id)
+        // 1. Buat Data KELAS Dulu (Nggak butuh relasi ke Jurusan lagi)
         $kelasTKJ = ClassRoom::create([
             'name' => '12 TKJ 1',
-            'department_id' => $jurusanTKJ->id, // ✅ Relasi ke Jurusan TKJ
             'academic_year' => '2025/2026'
         ]);
 
         $kelasTKR = ClassRoom::create([
             'name' => '10 TKR 2',
-            'department_id' => $jurusanTKR->id, // ✅ Relasi ke Jurusan TKR
             'academic_year' => '2025/2026'
         ]);
 
-        // 3. Buat Akun SUPER ADMIN (Guru)
+        // 2. Buat Akun ADMIN PERPUSTAKAAN (Kepala Perpus)
         User::create([
-            'name' => 'Pak Budi (Guru)',
-            'email' => 'admin@teknilog.com',
+            'name' => 'Pak Budi (Kepala Perpus)',
+            'email' => 'admin@librify.com',
             'username' => 'admin',
             'role' => 'admin',
             'password' => Hash::make('password'),
+            'status' => 'approved', // Wajib approved biar bisa login
         ]);
 
-        // 4. Buat Akun TOOLMAN (Bisa akses semua/beberapa jurusan)
-        $toolman = User::create([
-            'name' => 'Mas Jono (Toolman)',
-            'email' => 'toolman@teknilog.com',
-            'username' => 'toolman',
-            'role' => 'toolman',
-            'password' => Hash::make('password'),
-        ]);
-        
-        // (Optional) Hubungkan Toolman ke Jurusan (Lewat Pivot Table kalau ada)
-        // $toolman->assignedDepartments()->attach([$jurusanTKJ->id, $jurusanTKR->id]);
-
-        // 5. Buat Akun PERWAKILAN KELAS (Ketua Kelas)
+        // 3. Buat Akun STAFF / PETUGAS (Pengganti Toolman)
         User::create([
-            'name' => 'Ketua Kelas 12 TKJ 1',
-            'email' => '12tkj1@teknilog.com',
+            'name' => 'Mas Jono (Petugas)',
+            'email' => 'staff@librify.com',
+            'username' => 'staff',
+            'role' => 'staff',
+            'password' => Hash::make('password'),
+            'status' => 'approved',
+        ]);
+
+       
+
+        // 5. Buat Akun PERWAKILAN KELAS (Akun Kolektif)
+        User::create([
+            'name' => 'Andi Susanto', // Pake nama ketua kelas sesuai form lu
+            'email' => '12tkj1@librify.com',
             'role' => 'class',
-            'class_id' => $kelasTKJ->id, // Relasi ke Kelas
-            'department_id' => $jurusanTKJ->id, // Relasi ke Jurusan (Optional tapi bagus)
+            'class_id' => $kelasTKJ->id, // Relasi ke Kelas 12 TKJ 1
+            'chairman_name' => 'Andi Susanto', 
+            'vice_chairman_name' => 'Rina Melati',
             'password' => Hash::make('password'),
+            'status' => 'approved',
         ]);
         
         User::create([
-            'name' => 'Ketua Kelas 10 TKR 2',
-            'email' => '10tkr2@teknilog.com',
+            'name' => 'Dimas Anggara',
+            'email' => '10tkr2@librify.com',
             'role' => 'class',
             'class_id' => $kelasTKR->id,
-            'department_id' => $jurusanTKR->id,
+            'chairman_name' => 'Dimas Anggara',
             'password' => Hash::make('password'),
+            'status' => 'approved',
         ]);
 
-        // 6. Buat Akun SISWA INDIVIDU
+        // 6. Buat Akun SISWA INDIVIDU (Status Approved - Langsung bisa login)
         User::create([
             'name' => 'Ahmad Siswa (Pribadi)',
-            'email' => 'siswa@teknilog.com',
-            'nisn' => '0054812233', // Contoh NISN
+            'email' => 'siswa@librify.com',
+            'nisn' => '0054812233', 
             'role' => 'student',
-            'class_id' => $kelasTKJ->id, // Siswa anak 12 TKJ 1
+            'class_id' => $kelasTKJ->id, 
             'password' => Hash::make('password'),
+            'status' => 'approved',
+        ]);
+
+        // 7. Buat Akun SISWA INDIVIDU (Status Pending - Buat ngetes UI Approval di Admin)
+        User::create([
+            'name' => 'Siswa Baru Daftar',
+            'email' => 'baru@librify.com',
+            'nisn' => '0099887766', 
+            'role' => 'student',
+            'class_id' => $kelasTKR->id, 
+            'password' => Hash::make('password'),
+            'status' => 'pending',
         ]);
     }
 }

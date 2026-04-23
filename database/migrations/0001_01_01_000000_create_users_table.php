@@ -12,31 +12,17 @@ return new class extends Migration
     public function up(): void
     {
         // =========================================================
-        // URUTAN 1: Tabel Departments (HARUS PERTAMA KARENA PARENT)
+        // URUTAN 1: Tabel Class Rooms (Ganti nama dari classes biar match sama Model ClassRoom)
         // =========================================================
-        Schema::create('departments', function (Blueprint $table) {
+        Schema::create('class_rooms', function (Blueprint $table) {
             $table->id();
-            $table->string('name')->unique();
-            $table->string('slug')->nullable(); // Slug buat URL friendly
+            $table->string('name'); // Contoh: XII IPA 1, 10 PPLG 2
+            $table->string('academic_year')->nullable(); // Contoh: 2025/2026
             $table->timestamps();
         });
 
         // =========================================================
-        // URUTAN 2: Tabel Classes (Punya Relasi ke Departments)
-        // =========================================================
-        Schema::create('classes', function (Blueprint $table) {
-            $table->id();
-            $table->string('name'); // Contoh: 10 PPLG 1
-            
-            // Relasi ke Departments (Wajib ada tabel departments dulu)
-            $table->foreignId('department_id')->constrained('departments')->onDelete('cascade');
-            
-            $table->string('academic_year'); // Contoh: 2025/2026
-            $table->timestamps();
-        });
-
-        // =========================================================
-        // URUTAN 3: Tabel Users (Punya Relasi ke Classes & Departments)
+        // URUTAN 2: Tabel Users
         // =========================================================
         Schema::create('users', function (Blueprint $table) {
             $table->id();
@@ -46,13 +32,14 @@ return new class extends Migration
             $table->string('username')->nullable()->unique(); 
             $table->string('nisn')->nullable()->unique();     
             
-            $table->enum('role', ['admin', 'toolman', 'class', 'student'])->default('student');
+            // Role sesuai Librify
+            $table->enum('role', ['admin', 'staff', 'teacher', 'class', 'student'])->default('student');
             
-            // Relasi ke tabel classes
-            $table->foreignId('class_id')->nullable()->constrained('classes')->onDelete('set null');
-
-            // Relasi ke tabel departments (Opsional)
-            $table->foreignId('department_id')->nullable()->constrained('departments')->onDelete('set null');
+            // ✅ ADDED: Status untuk Sistem Approval
+            $table->enum('status', ['pending', 'approved', 'rejected'])->default('pending');
+            
+            // Relasi ke tabel class_rooms
+            $table->foreignId('class_id')->nullable()->constrained('class_rooms')->onDelete('set null');
 
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
@@ -60,7 +47,9 @@ return new class extends Migration
             $table->timestamps();
         });
 
+        // =========================================================
         // Tabel Bawaan Laravel (Reset Password & Sessions)
+        // =========================================================
         Schema::create('password_reset_tokens', function (Blueprint $table) {
             $table->string('email')->primary();
             $table->string('token');
@@ -84,8 +73,7 @@ return new class extends Migration
     {
         // Hapus harus dibalik urutannya (Child dulu baru Parent)
         Schema::dropIfExists('users');
-        Schema::dropIfExists('classes');
-        Schema::dropIfExists('departments'); // Hapus departments terakhir
+        Schema::dropIfExists('class_rooms');
         Schema::dropIfExists('password_reset_tokens');
         Schema::dropIfExists('sessions');
     }

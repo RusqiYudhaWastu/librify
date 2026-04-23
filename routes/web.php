@@ -12,10 +12,10 @@ use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\Admin\AuditController;
 use App\Http\Controllers\Admin\ReportController as AdminReportController;
 
-// 2. Import Toolman Controllers
-use App\Http\Controllers\Toolman\DashboardController as ToolmanDashboardController;
-use App\Http\Controllers\Toolman\LoanController as ToolmanLoanController;
-use App\Http\Controllers\Toolman\ReportController as ToolmanReportController;
+// 2. Import Staff/Petugas Controllers (Folder bawaan masih Toolman)
+use App\Http\Controllers\Toolman\DashboardController as StaffDashboardController;
+use App\Http\Controllers\Toolman\LoanController as StaffLoanController;
+use App\Http\Controllers\Toolman\ReportController as StaffReportController;
 
 // 3. Import Siswa Controllers (Role: Class / Perwakilan Kelas)
 use App\Http\Controllers\Siswa\DashboardController as SiswaDashboardController;
@@ -29,7 +29,7 @@ use App\Http\Controllers\Student\ReportController as StudentReportController;
 
 /*
 |--------------------------------------------------------------------------
-| Web Routes - TekniLog System (SMKN 1 CIOMAS)
+| Web Routes - Librify System (Library Universal)
 |--------------------------------------------------------------------------
 */
 
@@ -38,26 +38,36 @@ Route::get('/', function () {
     return view('welcome');
 });
 
-// --- B. DASHBOARD REDIRECTOR ---
+// --- B. DASHBOARD REDIRECTOR (FIXED TRAP) ---
 Route::get('/dashboard', function () {
     $user = Auth::user();
     
-    if ($user->role === 'admin') {
+    // ✅ PROTEKSI STATUS DIMATIKAN SEMENTARA BIAR BISA LOGIN MULUS
+    // if (isset($user->status) && $user->status !== 'approved') {
+    //     Auth::logout();
+    //     return redirect()->route('login')->with('error', 'Akun Anda belum disetujui oleh Administrator.');
+    // }
+    
+    // ✅ Redirect berdasarkan role (Gua tambahin ALIAS bahasa Indonesia biar ga ketendang)
+    if (in_array($user->role, ['admin', 'superadmin'])) {
         return redirect()->route('admin.dashboard');
-    } elseif ($user->role === 'toolman') {
-        return redirect()->route('toolman.dashboard');
-    } elseif ($user->role === 'class') {
+    } elseif (in_array($user->role, ['toolman', 'staff', 'petugas'])) {
+        return redirect()->route('staff.dashboard');
+    } elseif (in_array($user->role, ['class', 'kelas'])) {
         return redirect()->route('siswa.dashboard');
-    } elseif ($user->role === 'student') {
+    } elseif (in_array($user->role, ['student', 'siswa', 'member'])) {
         return redirect()->route('student.dashboard');
     }
     
-    return redirect('/'); 
-})->middleware(['auth', 'verified'])->name('dashboard');
+    // ✅ SAFETY NET: Kalau role ga jelas, paksa logout dan kasih tau errornya apa!
+    Auth::logout();
+    return redirect('/login')->with('error', 'Akses ditolak. Role akun Anda (' . $user->role . ') tidak dikenali sistem.'); 
+    
+})->middleware(['auth'])->name('dashboard'); // ✅ 'verified' dihapus sementara
 
 
-// --- C. GROUP ROUTE: SUPER ADMIN (Indigo Theme) ---
-Route::middleware(['auth', 'role:admin'])
+// --- C. GROUP ROUTE: SUPER ADMIN & STAFF (Indigo Theme) ---
+Route::middleware(['auth', 'role:admin,staff,toolman'])
     ->prefix('admin')
     ->name('admin.')
     ->group(function () {
@@ -66,11 +76,12 @@ Route::middleware(['auth', 'role:admin'])
         
         // Manajemen Pengguna
         Route::get('/pengguna', [UserController::class, 'index'])->name('pengguna.index');
+        Route::post('/pengguna/import', [UserController::class, 'import'])->name('pengguna.import');
         Route::post('/pengguna', [UserController::class, 'store'])->name('pengguna.store');
         Route::put('/pengguna/{id}', [UserController::class, 'update'])->name('pengguna.update');
         Route::delete('/pengguna/{id}', [UserController::class, 'destroy'])->name('pengguna.destroy');
 
-        // Manajemen Barang / Asset
+        // Manajemen Buku / Katalog
         Route::get('/barang', [AdminItemController::class, 'index'])->name('barang.index'); 
         Route::post('/barang', [AdminItemController::class, 'store'])->name('barang.store'); 
         Route::put('/barang/{id}', [AdminItemController::class, 'update'])->name('barang.update'); 
@@ -78,17 +89,12 @@ Route::middleware(['auth', 'role:admin'])
         Route::put('/barang/{id}/maintenance', [AdminItemController::class, 'setMaintenance'])->name('barang.maintenance');
         Route::delete('/barang/{id}', [AdminItemController::class, 'destroy'])->name('barang.destroy');
 
-        // Manajemen Klasifikasi (Kategori & Jurusan)
+        // Manajemen Kategori Koleksi & Kelas
         Route::get('/kategori', [CategoryController::class, 'index'])->name('kategori.index');
         Route::post('/kategori', [CategoryController::class, 'store'])->name('kategori.store');
         Route::put('/kategori/{id}', [CategoryController::class, 'update'])->name('kategori.update');
         Route::delete('/kategori/{id}', [CategoryController::class, 'destroy'])->name('kategori.destroy');
 
-        Route::post('/jurusan', [CategoryController::class, 'storeDept'])->name('jurusan.store');
-        Route::put('/jurusan/{id}', [CategoryController::class, 'updateDept'])->name('jurusan.update');
-        Route::delete('/jurusan/{id}', [CategoryController::class, 'destroyDept'])->name('jurusan.destroy');
-        
-        // Manajemen Kelas
         Route::post('/kelas', [CategoryController::class, 'storeClass'])->name('kelas.store');
         Route::put('/kelas/{id}', [CategoryController::class, 'updateClass'])->name('kelas.update');
         Route::delete('/kelas/{id}', [CategoryController::class, 'destroyClass'])->name('kelas.destroy');
@@ -100,50 +106,57 @@ Route::middleware(['auth', 'role:admin'])
     });
 
 
-// --- D. GROUP ROUTE: TOOLMAN (Emerald Theme) ---
-Route::middleware(['auth', 'role:toolman'])
-    ->prefix('toolman')
-    ->name('toolman.')
+// --- D. GROUP ROUTE: PETUGAS PERPUS (Emerald Theme) ---
+Route::middleware(['auth', 'role:toolman,staff'])
+    ->prefix('staff')
+    ->name('staff.')
     ->group(function () {
         
-        Route::get('/dashboard', [ToolmanDashboardController::class, 'index'])->name('dashboard');
+        Route::get('/dashboard', [StaffDashboardController::class, 'index'])->name('dashboard');
         
-        // Manajemen Request & Peminjaman
-        Route::get('/request', [ToolmanLoanController::class, 'index'])->name('request');
-        Route::put('/request/{id}/approve', [ToolmanLoanController::class, 'approve'])->name('request.approve');
-        Route::put('/request/{id}/reject', [ToolmanLoanController::class, 'reject'])->name('request.reject');
-        Route::put('/request/{id}/return', [ToolmanLoanController::class, 'returnItem'])->name('request.return');
+        // Manajemen Request & Peminjaman Buku
+        Route::get('/request', [StaffLoanController::class, 'index'])->name('request');
         
-        // Pelunasan Denda
-        Route::put('/request/{id}/paid', [ToolmanLoanController::class, 'markAsPaid'])->name('request.paid');
+        // Batching Actions
+        Route::put('/request/batch-action', [StaffLoanController::class, 'batchAction'])->name('request.batch_action');
+        Route::put('/request/batch-return', [StaffLoanController::class, 'batchReturn'])->name('request.batch_return');
+        
+        // Single Actions
+        Route::put('/request/{id}/approve', [StaffLoanController::class, 'approve'])->name('request.approve');
+        Route::put('/request/{id}/reject', [StaffLoanController::class, 'reject'])->name('request.reject');
+        Route::put('/request/{id}/return', [StaffLoanController::class, 'returnItem'])->name('request.return');
+        Route::put('/request/{id}/paid', [StaffLoanController::class, 'markAsPaid'])->name('request.paid');
 
-        // --- SEKSI LAPORAN & KENDALA TOOLMAN ---
-        Route::get('/laporan', [ToolmanReportController::class, 'index'])->name('laporan');
-        Route::get('/laporan/export', [ToolmanReportController::class, 'exportPdf'])->name('laporan.export');
-        Route::put('/laporan/masalah/{id}', [ToolmanReportController::class, 'updateProblemStatus'])->name('laporan.update_status');
+        // --- SEKSI LAPORAN & KENDALA PETUGAS ---
+        Route::get('/laporan', [StaffReportController::class, 'index'])->name('laporan');
+        Route::get('/laporan/export', [StaffReportController::class, 'exportPdf'])->name('laporan.export');
+        Route::put('/laporan/masalah/{id}', [StaffReportController::class, 'updateProblemStatus'])->name('laporan.update_status');
     });
 
 
-// --- E. GROUP ROUTE: CLASS REPRESENTATIVE / PERWAKILAN KELAS (Blue Theme) ---
-Route::middleware(['auth', 'role:class'])
+// --- E. GROUP ROUTE: CLASS REPRESENTATIVE / AKUN KELAS (Blue Theme) ---
+// ✅ Tambahin 'kelas' ke dalam middleware biar role indonesianya kebaca
+Route::middleware(['auth', 'role:class,kelas'])
     ->prefix('siswa')
     ->name('siswa.')
     ->group(function () {
         
         Route::get('/dashboard', [SiswaDashboardController::class, 'index'])->name('dashboard');
         
-        // Booking Alat (Untuk Satu Kelas)
+        // Pinjam Buku (Untuk Satu Kelas)
         Route::get('/request', [SiswaLoanController::class, 'index'])->name('request');
         Route::post('/request', [SiswaLoanController::class, 'store'])->name('request.store');
 
-        // --- SEKSI LAPORAN & KENDALA SISWA ---
+        // --- SEKSI LAPORAN & KENDALA KELAS ---
         Route::get('/laporan', [SiswaReportController::class, 'index'])->name('laporan');
+        Route::get('/laporan/rapot', [SiswaReportController::class, 'rapot'])->name('laporan.rapot');
         Route::post('/laporan/masalah', [SiswaReportController::class, 'storeProblem'])->name('laporan.problem');
         Route::get('/laporan/export', [SiswaReportController::class, 'exportPdf'])->name('laporan.export');
     });
 
 // --- F. GROUP ROUTE: STUDENT / SISWA INDIVIDU (Cyan Theme) ---
-Route::middleware(['auth', 'role:student'])
+// ✅ Tambahin 'siswa' ke dalam middleware
+Route::middleware(['auth', 'role:student,siswa'])
     ->prefix('student')
     ->name('student.')
     ->group(function () {
@@ -151,14 +164,14 @@ Route::middleware(['auth', 'role:student'])
         // Dashboard Pribadi
         Route::get('/dashboard', [StudentDashboardController::class, 'index'])->name('dashboard');
         
-        // Booking Alat (Pribadi)
+        // Pinjam Buku (Pribadi)
         Route::get('/request', [StudentLoanController::class, 'index'])->name('request');
         Route::post('/request', [StudentLoanController::class, 'store'])->name('request.store');
 
         // --- SEKSI LAPORAN & KENDALA PRIBADI ---
         Route::get('/laporan', [StudentReportController::class, 'index'])->name('laporan');
-        Route::post('/laporan', [StudentReportController::class, 'store'])->name('laporan.store'); // ✅ FIXED: Route name matches controller
-        Route::get('/laporan/export', [StudentReportController::class, 'exportPdf'])->name('laporan.export'); // ✅ FIXED: Route name matches controller
+        Route::post('/laporan', [StudentReportController::class, 'store'])->name('laporan.store'); 
+        Route::get('/laporan/export', [StudentReportController::class, 'exportPdf'])->name('laporan.export'); 
     });
 
 

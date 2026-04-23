@@ -16,25 +16,32 @@ class Item extends Model
         'category_id', 
         'name',
         'asset_code',
-        'stock',
-        'status',
+        'stock',               // ✅ Stok buku yang SIAP PINJAM / Tersedia
+        'maintenance_stock',   // ✅ Jumlah buku yang lagi dirawat / diperbaiki
+        'broken_stock',        // ✅ Jumlah buku yang rusak / hilang
+        'status',              // Status global (opsional)
         'description',
         'maintenance_date',
         'maintenance_note',
-        'image' // ✅ WAJIB ADA: Agar foto bisa disimpan
+        'image',
+        
+        // ✅ FIELD BARU UNTUK KATALOG BUKU (LIBRIFY)
+        'author',              // Penulis Buku
+        'publisher',           // Penerbit Buku
+        'publish_year'         // Tahun Terbit
     ];
 
     /**
-     * Relasi ke Model Category (Satu barang punya satu kategori).
+     * Relasi ke Model Category (Satu buku punya satu kategori/genre).
      */
-    public function category()
-    {
-        return $this->belongsTo(Category::class);
-    }
+   public function categories()
+{
+    return $this->belongsToMany(Category::class, 'category_item');
+}
 
     /**
-     * Relasi ke Model Loan (Satu barang bisa dipinjam berkali-kali).
-     * Ini digunakan untuk sistem request peminjaman siswa.
+     * Relasi ke Model Loan (Satu buku bisa dipinjam berkali-kali).
+     * Ini digunakan untuk sistem riwayat peminjaman siswa.
      */
     public function loans()
     {

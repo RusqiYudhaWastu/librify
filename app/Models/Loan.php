@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Str;
 
 class Loan extends Model
 {
@@ -11,7 +12,7 @@ class Loan extends Model
 
     /**
      * Kolom yang dapat diisi secara massal.
-     * Sudah ditambahkan 'lost_quantity' dan 'fine_status'.
+     * UPDATE: Ditambahkan 'loan_code' untuk sistem validasi otomatis.
      */
     protected $fillable = [
         'user_id',
@@ -19,6 +20,7 @@ class Loan extends Model
         'quantity',
         'reason',
         'status',
+        'loan_code',        // ✅ Tambahkan ini untuk menyimpan Token/Kode Unik
         'loan_date',
         'return_date',
         'return_condition', // Status fisik: aman/rusak/hilang
@@ -27,7 +29,11 @@ class Loan extends Model
         'return_note',      // Detail Barang Rusak (misal: "Layar Pecah")
         'lost_quantity',    // ✅ Jumlah unit yang rusak/hilang (Angka)
         'fine_status',      // ✅ Status pembayaran denda (unpaid/paid)
-        'admin_note'        // Catatan umum admin/toolman
+        'admin_note',       // Catatan umum admin/toolman
+
+        // ✅ INI WAJIB ADA BIAR DURASI KESIMPAN:
+        'duration_amount',  // Angka (misal: 3)
+        'duration_unit',    // Satuan (misal: days/hours)
     ];
 
     /**
@@ -45,4 +51,9 @@ class Loan extends Model
     {
         return $this->belongsTo(Item::class);
     }
+
+    /**
+     * Boot function untuk generate kode otomatis jika ingin ditaruh di Model.
+     * Tapi lebih aman kita handle di Controller saat user klik 'Pinjam'.
+     */
 }

@@ -35,13 +35,13 @@
     
     {{-- Brand Logo & Close Button --}}
     <div class="h-20 flex items-center justify-between px-6 border-b border-emerald-900 bg-emerald-950/50 backdrop-blur-sm">
-        <a href="{{ route('toolman.dashboard') }}" class="flex items-center gap-3 group text-left">
+        <a href="{{ route('staff.dashboard') }}" class="flex items-center gap-3 group text-left">
             <div class="w-10 h-10 rounded-xl bg-emerald-600 flex items-center justify-center text-white shadow-lg shadow-emerald-500/30 group-hover:scale-110 transition-transform duration-300">
-                <i class="bi bi-tools text-xl"></i>
+                <i class="bi bi-book-half text-xl"></i>
             </div>
             <div>
-                <h1 class="text-lg font-black text-white tracking-wide leading-none font-jakarta">TEKNILOG</h1>
-                <p class="text-[9px] text-emerald-500 uppercase font-bold tracking-widest mt-1">Toolman Panel</p>
+                <h1 class="text-lg font-black text-white tracking-wide leading-none font-jakarta uppercase">LIBRIFY</h1>
+                <p class="text-[9px] text-emerald-500 uppercase font-bold tracking-widest mt-1">Librarian Portal</p>
             </div>
         </a>
 
@@ -58,17 +58,17 @@
             <h3 class="px-2 mb-4 text-[10px] font-black text-emerald-500/60 uppercase tracking-[0.2em]">Pusat Operasional</h3>
             <ul class="space-y-1.5 text-left">
                 <li>
-                    <a href="{{ route('toolman.dashboard') }}" 
-                       class="flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200 group {{ request()->routeIs('toolman.dashboard') ? 'bg-gradient-to-r from-emerald-600 to-emerald-500 text-white shadow-lg shadow-emerald-900/40' : 'hover:bg-emerald-900/50 hover:text-white' }}">
-                        <i class="bi bi-grid-1x2-fill w-5 text-center text-lg {{ request()->routeIs('toolman.dashboard') ? '' : 'text-emerald-500 group-hover:text-emerald-300' }}"></i>
-                        <span class="font-bold text-sm">Dashboard</span>
+                    <a href="{{ route('staff.dashboard') }}" 
+                       class="flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200 group {{ request()->routeIs('staff.dashboard') ? 'bg-gradient-to-r from-emerald-600 to-emerald-500 text-white shadow-lg shadow-emerald-900/40' : 'hover:bg-emerald-900/50 hover:text-white' }}">
+                        <i class="bi bi-grid-1x2-fill w-5 text-center text-lg {{ request()->routeIs('staff.dashboard') ? '' : 'text-emerald-500 group-hover:text-emerald-300' }}"></i>
+                        <span class="font-bold text-sm">Dashboard Petugas</span>
                     </a>
                 </li>
                 <li>
-                    <a href="{{ route('toolman.request') }}" 
-                       class="flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200 group hover:translate-x-1 {{ request()->routeIs('toolman.request') ? 'bg-emerald-900 text-white border-l-4 border-emerald-500' : 'hover:bg-emerald-900/50 hover:text-white' }}">
-                        <i class="bi bi-clipboard2-check-fill w-5 text-center text-lg {{ request()->routeIs('toolman.request') ? 'text-emerald-400' : 'text-emerald-500 group-hover:text-emerald-300' }} transition-colors"></i>
-                        <span class="font-bold text-sm">Permintaan Pinjam</span>
+                    <a href="{{ route('staff.request') }}" 
+                       class="flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200 group hover:translate-x-1 {{ request()->routeIs('staff.request') ? 'bg-emerald-900 text-white border-l-4 border-emerald-500' : 'hover:bg-emerald-900/50 hover:text-white' }}">
+                        <i class="bi bi-journal-check w-5 text-center text-lg {{ request()->routeIs('staff.request') ? 'text-emerald-400' : 'text-emerald-500 group-hover:text-emerald-300' }} transition-colors"></i>
+                        <span class="font-bold text-sm">Sirkulasi Buku</span>
                         <span class="ml-auto bg-emerald-500 text-[9px] font-black px-1.5 py-0.5 rounded text-white tracking-tighter">REQ</span>
                     </a>
                 </li>
@@ -80,10 +80,10 @@
             <h3 class="px-2 mb-4 text-[10px] font-black text-emerald-500/60 uppercase tracking-[0.2em]">Monitoring</h3>
             <ul class="space-y-1.5 text-left">
                 <li>
-                    <a href="{{ route('toolman.laporan') }}" 
-                       class="flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200 group hover:translate-x-1 {{ request()->routeIs('toolman.laporan') ? 'bg-emerald-900 text-white border-l-4 border-emerald-500' : 'hover:bg-emerald-900/50 hover:text-white' }}">
-                        <i class="bi bi-file-earmark-text-fill w-5 text-center text-lg {{ request()->routeIs('toolman.laporan') ? 'text-emerald-400' : 'text-emerald-500 group-hover:text-emerald-300' }} transition-colors"></i>
-                        <span class="font-bold text-sm">Laporan Kerusakan</span>
+                    <a href="{{ route('staff.laporan') }}" 
+                       class="flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200 group hover:translate-x-1 {{ request()->routeIs('staff.laporan') ? 'bg-emerald-900 text-white border-l-4 border-emerald-500' : 'hover:bg-emerald-900/50 hover:text-white' }}">
+                        <i class="bi bi-file-earmark-text-fill w-5 text-center text-lg {{ request()->routeIs('staff.laporan') ? 'text-emerald-400' : 'text-emerald-500 group-hover:text-emerald-300' }} transition-colors"></i>
+                        <span class="font-bold text-sm">Laporan Koleksi</span>
                     </a>
                 </li>
             </ul>
@@ -95,16 +95,14 @@
     <div class="p-4 border-t border-emerald-900 bg-emerald-950/30 text-left">
         <div class="flex items-center gap-3 p-2 rounded-2xl hover:bg-emerald-900 transition-colors group cursor-pointer border border-transparent hover:border-emerald-800">
             <div class="relative">
-                <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-emerald-500 to-teal-500 flex items-center justify-center text-white font-black text-sm ring-2 ring-emerald-950 group-hover:ring-emerald-500 transition-all text-center uppercase shadow-inner">
-                    {{ substr(Auth::user()->name, 0, 2) }}
-                </div>
+                <img src="{{ Auth::user()->profile_photo_url }}" class="w-10 h-10 rounded-xl object-cover ring-2 ring-emerald-950 group-hover:ring-emerald-500 transition-all shadow-inner">
                 <div class="absolute -bottom-1 -right-1 w-4 h-4 bg-emerald-500 border-2 border-emerald-950 rounded-full flex items-center justify-center">
                     <div class="w-1.5 h-1.5 bg-white rounded-full animate-pulse"></div>
                 </div>
             </div>
             <div class="overflow-hidden leading-tight text-left">
-                <p class="text-sm font-black text-white truncate group-hover:text-emerald-300 transition-colors uppercase font-jakarta tracking-tight">{{ Auth::user()->name }}</p>
-                <p class="text-[9px] text-emerald-500/80 truncate uppercase font-bold tracking-[0.1em] mt-0.5">{{ Auth::user()->role }} Dept.</p>
+                <p class="text-sm font-black text-white truncate group-hover:text-emerald-300 transition-colors uppercase font-jakarta tracking-tight">{{ Str::limit(Auth::user()->name, 12) }}</p>
+                <p class="text-[9px] text-emerald-500/80 truncate uppercase font-bold tracking-[0.1em] mt-0.5">Staf Perpustakaan</p>
             </div>
         </div>
     </div>

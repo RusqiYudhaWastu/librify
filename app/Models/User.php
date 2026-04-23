@@ -18,14 +18,14 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
-        'role',               // admin, toolman, class, student
+        'role',               // admin, staff, teacher, class, student
         'username',  
-        'nisn',               // ✅ ADDED: Kolom NISN agar bisa diinput
-        'department_id',      // Jurusan
+        'nisn',               // Kolom NISN untuk validasi Siswa
         'chairman_name',      // Nama Ketua Kelas (Khusus role 'class')
         'vice_chairman_name', // Nama Wakil Ketua (Khusus role 'class')
         'class_id',           // ID Kelas (Untuk role 'class' & 'student')
         'profile_photo',      // Kolom Foto Profil
+        'status',             // ✅ ADDED: 'pending', 'approved', 'rejected' untuk Sistem Approval
     ];
 
     /**
@@ -54,30 +54,36 @@ class User extends Authenticatable
 
     /**
      * ==========================================
-     * HELPER FUNCTIONS UNTUK CEK ROLE
+     * HELPER FUNCTIONS UNTUK CEK ROLE LIRBIFY
      * Biar di Controller/Blade kodingnya enak
      * ==========================================
      */
 
-    // Cek apakah Admin
+    // Cek apakah Admin Server/Kepala Perpus
     public function isAdmin()
     {
         return $this->role === 'admin';
     }
 
-    // Cek apakah Toolman
-    public function isToolman()
+    // ✅ NEW: Cek apakah Petugas Perpustakaan (Pengganti Toolman)
+    public function isStaff()
     {
-        return $this->role === 'toolman';
+        return $this->role === 'staff';
     }
 
-    // Cek apakah Perwakilan Kelas (Role Lama)
+    // ✅ NEW: Cek apakah Guru / Wali Kelas
+    public function isTeacher()
+    {
+        return $this->role === 'teacher';
+    }
+
+    // Cek apakah Akun Perwakilan Kelas Kolektif
     public function isClassRep()
     {
         return $this->role === 'class';
     }
 
-    // ✅ NEW: Cek apakah Siswa Perindividu (Role Baru)
+    // Cek apakah Siswa Perindividu
     public function isStudent()
     {
         return $this->role === 'student';
@@ -94,28 +100,18 @@ class User extends Authenticatable
         }
 
         // Fallback: Pake UI Avatars kalau user belum upload foto
-        return 'https://ui-avatars.com/api/?name=' . urlencode($this->name) . '&background=6366f1&color=fff&bold=true';
+        return 'https://ui-avatars.com/api/?name=' . urlencode($this->name) . '&background=06b6d4&color=fff&bold=true';
     }
 
     /**
-     * Relasi ke Department (Jalur Siswa & Ketua Kelas)
+     * ==========================================
+     * RELASI DATABASE
+     * ==========================================
      */
-    public function department()
-    {
-        return $this->belongsTo(Department::class, 'department_id');
-    }
 
     /**
-     * Relasi ke Departments (Jalur Toolman - Many to Many)
-     */
-    public function assignedDepartments()
-    {
-        return $this->belongsToMany(Department::class, 'department_user');
-    }
-
-    /**
-     * Relasi ke ClassRoom
-     * Digunakan oleh Role 'class' dan 'student'
+     * Relasi ke ClassRoom (Data Kelas)
+     * Digunakan oleh Role 'class', 'student', dan 'teacher' (jika wali kelas)
      */
     public function classRoom()
     {

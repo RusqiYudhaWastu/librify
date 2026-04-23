@@ -11,12 +11,16 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('category_department', function (Blueprint $table) {
+        Schema::create('category_item', function (Blueprint $table) {
             $table->id();
-            // Menghubungkan ke tabel categories
+            
+            // Relasi ke tabel categories
             $table->foreignId('category_id')->constrained()->onDelete('cascade');
-            // Menghubungkan ke tabel departments
-            $table->foreignId('department_id')->constrained()->onDelete('cascade');
+            
+            // Relasi ke tabel items
+            $table->foreignId('item_id')->constrained('items')->onDelete('cascade');
+            
+            $table->timestamps();
         });
     }
 
@@ -25,6 +29,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('category_department');
+        Schema::dropIfExists('category_item');
     }
 };

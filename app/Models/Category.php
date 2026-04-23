@@ -28,7 +28,7 @@ class Category extends Model
      * Digunakan untuk menampilkan daftar inventaris di modal detail.
      */
     public function items()
-    {
-        return $this->hasMany(Item::class);
-    }
+{
+    return $this->belongsToMany(Item::class, 'category_item');
+}
 }

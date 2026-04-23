@@ -28,11 +28,11 @@
             year: 'numeric' 
         });
     }
-}" class="sticky top-0 z-40 w-full px-3 md:px-6 pt-4 md:pt-6 pb-2 pointer-events-none">
+}" class="sticky top-0 z-40 w-full px-3 md:px-6 pt-4 md:pt-6 pb-2 pointer-events-none text-left">
     
-    <header class="header-floating pointer-events-auto mx-auto max-w-[1550px] rounded-2xl md:rounded-[2.5rem] shadow-[0_10px_40px_-15px_rgba(0,0,0,0.08)] border border-white/50 flex justify-between items-center px-4 md:px-10 py-3 md:py-4 transition-all duration-300">
+    <header class="header-floating pointer-events-auto mx-auto max-w-[1550px] rounded-2xl md:rounded-[2.5rem] shadow-[0_10px_40px_-15px_rgba(0,0,0,0.08)] border border-white/50 flex justify-between items-center px-4 md:px-10 py-3 md:py-4 transition-all duration-300 text-left leading-none">
         
-        {{-- 1. BRAND SECTION (Updated dengan TomBOL MENU) --}}
+        {{-- 1. BRAND SECTION (Updated to Librify) --}}
         <div class="flex items-center gap-3 md:gap-4 flex-shrink-0">
             
             {{-- Tombol Hamburger (Hanya Mobile) --}}
@@ -41,17 +41,17 @@
             </button>
 
             <div class="w-10 h-10 md:w-12 md:h-12 rounded-xl md:rounded-2xl bg-blue-600 text-white flex items-center justify-center shadow-lg shadow-blue-100">
-                <i class="bi bi-box-seam-fill text-lg md:text-xl"></i>
+                <i class="bi bi-book-half text-lg md:text-xl"></i>
             </div>
             <div class="leading-tight text-left">
-                <h1 class="text-sm md:text-lg font-black text-gray-900 tracking-tight font-jakarta uppercase leading-none">TekniLog</h1>
-                <p class="text-[7px] md:text-[9px] font-bold text-blue-500 uppercase tracking-[0.2em] mt-1 md:mt-1.5">Student Access</p>
+                <h1 class="text-sm md:text-lg font-black text-gray-900 tracking-tight font-jakarta uppercase leading-none">Librify</h1>
+                <p class="text-[7px] md:text-[9px] font-bold text-blue-500 uppercase tracking-[0.2em] mt-1 md:mt-1.5">Member Access</p>
             </div>
         </div>
 
-        {{-- 2. DATE SECTION (Hidden di HP sangat kecil) --}}
+        {{-- 2. DATE SECTION --}}
         <div class="hidden sm:flex flex-col items-center flex-1 px-4 text-center">
-            <p class="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] mb-0.5">Jadwal Peminjaman</p>
+            <p class="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] mb-0.5">Kalender Perpustakaan</p>
             <p class="text-sm font-black text-gray-800 font-jakarta leading-none" x-text="currentDate"></p>
         </div>
 
@@ -83,7 +83,7 @@
                     <div class="max-h-[300px] overflow-y-auto notif-scroll">
                         @forelse(Auth::user()->notifications as $notification)
                             <a href="{{ route('notifications.read', $notification->id) }}" class="block p-4 border-b border-gray-50 hover:bg-blue-50/30 transition-colors {{ $notification->read_at ? '' : 'bg-blue-50/50' }}">
-                                <div class="flex gap-3">
+                                <div class="flex gap-3 text-left">
                                     <div class="flex-shrink-0 mt-1">
                                         @php 
                                             $type = $notification->data['type'] ?? 'info';
@@ -96,8 +96,8 @@
                                         @endphp
                                         <i class="bi {{ $icon }}"></i>
                                     </div>
-                                    <div class="flex-1">
-                                        <p class="text-[11px] font-bold text-gray-800 leading-tight mb-1">{{ $notification->data['title'] ?? 'Info Kelas' }}</p>
+                                    <div class="flex-1 leading-tight">
+                                        <p class="text-[11px] font-bold text-gray-800 leading-tight mb-1">{{ $notification->data['title'] ?? 'Update Sirkulasi' }}</p>
                                         <p class="text-[10px] text-gray-500 leading-relaxed">{{ $notification->data['message'] ?? '' }}</p>
                                         <p class="text-[9px] text-gray-400 mt-2 font-medium">{{ $notification->created_at->diffForHumans() }}</p>
                                     </div>
@@ -119,8 +119,8 @@
                     <img src="{{ Auth::user()->profile_photo_url }}" class="w-7 h-7 md:w-9 md:h-9 rounded-lg md:rounded-xl object-cover shadow-sm border border-blue-50" alt="{{ Auth::user()->name }}">
                     
                     <div class="hidden sm:block text-left leading-none">
-                        <p class="text-[10px] md:text-xs font-black text-gray-900 uppercase tracking-tight">{{ Str::limit(Auth::user()->name, 10) }}</p>
-                        <p class="text-[7px] md:text-[8px] font-bold text-blue-500 tracking-widest uppercase mt-1">Akun Kelas</p>
+                        <p class="text-[10px] md:text-xs font-black text-gray-900 uppercase tracking-tight">{{ Str::limit(Auth::user()->name, 12) }}</p>
+                        <p class="text-[7px] md:text-[8px] font-bold text-blue-500 tracking-widest uppercase mt-1">{{ Auth::user()->role === 'class' ? 'Akun Kelas' : 'Siswa' }}</p>
                     </div>
                     <i class="bi bi-chevron-down text-[8px] md:text-[10px] text-gray-400 md:ml-1 group-hover:text-blue-600"></i>
                 </button>
@@ -130,11 +130,11 @@
                     <div class="p-6 text-center border-b border-gray-50 bg-blue-50/20">
                         <img src="{{ Auth::user()->profile_photo_url }}" class="w-14 h-14 rounded-2xl object-cover mx-auto mb-3 shadow-lg border-4 border-white" alt="{{ Auth::user()->name }}">
                         <h4 class="font-black text-gray-900 text-xs md:text-sm uppercase leading-tight">{{ Auth::user()->name }}</h4>
-                        <p class="text-[9px] text-gray-400 font-bold uppercase tracking-widest mt-2">ID: {{ Auth::user()->username }}</p>
+                        <p class="text-[9px] text-gray-400 font-bold uppercase tracking-widest mt-2">ID: {{ Auth::user()->username ?? Auth::user()->nisn }}</p>
                     </div>
                     <div class="p-2 space-y-1">
                         <a href="{{ route('profile.edit') }}" class="flex items-center gap-3 px-4 py-3 text-[11px] md:text-xs font-bold text-gray-600 rounded-xl hover:bg-blue-50 hover:text-blue-600 transition-all">
-                            <i class="bi bi-person-badge text-base"></i> Profile Kelas
+                            <i class="bi bi-person-badge text-base"></i> My Profile
                         </a>
                         <button @click="modalLogout = true; profileOpen = false" class="w-full flex items-center gap-3 px-4 py-3 text-[11px] md:text-xs font-bold text-red-500 rounded-xl hover:bg-red-50 transition-all text-left">
                             <i class="bi bi-box-arrow-right text-base"></i> Keluar Sistem
@@ -146,19 +146,19 @@
     </header>
 
     {{-- MODAL LOGOUT --}}
-    <div x-show="modalLogout" x-cloak class="fixed inset-0 z-[100] flex items-center justify-center p-4 pointer-events-auto">
+    <div x-show="modalLogout" x-cloak class="fixed inset-0 z-[100] flex items-center justify-center p-4 pointer-events-auto text-left">
         <div x-show="modalLogout" x-transition.opacity @click="modalLogout = false" class="absolute inset-0 bg-slate-900/40 backdrop-blur-sm"></div>
         <div x-show="modalLogout" x-transition.scale.95 class="relative w-full max-w-[320px] md:max-w-sm bg-white rounded-[2rem] md:rounded-[3rem] shadow-2xl p-8 md:p-10 text-center border border-white">
             <div class="w-16 h-16 md:w-20 md:h-20 bg-red-50 text-red-500 rounded-full flex items-center justify-center mx-auto mb-6 shadow-inner">
                 <i class="bi bi-door-open-fill text-2xl md:text-3xl"></i>
             </div>
-            <h3 class="text-xl md:text-2xl font-black text-gray-900 mb-2 font-jakarta">Logout Sesi?</h3>
-            <p class="text-[12px] md:text-sm text-gray-500 mb-8 leading-relaxed font-medium">Sesi kelas akan diakhiri. Pastikan semua barang sudah dikembalikan.</p>
+            <h3 class="text-xl md:text-2xl font-black text-gray-900 mb-2 font-jakarta uppercase">Logout Sesi?</h3>
+            <p class="text-[12px] md:text-sm text-gray-500 mb-8 leading-relaxed font-medium">Sesi Anda di Librify akan diakhiri. Pastikan semua buku sudah dikembalikan tepat waktu.</p>
             <div class="flex flex-col sm:flex-row gap-3">
                 <button @click="modalLogout = false" class="order-2 sm:order-1 flex-1 px-6 py-3.5 rounded-xl md:rounded-2xl bg-gray-50 text-gray-500 font-bold text-sm hover:bg-gray-100 transition-all">Batal</button>
                 <form action="{{ route('logout') }}" method="POST" class="order-1 sm:order-2 flex-1">
                     @csrf
-                    <button type="submit" class="w-full px-6 py-3.5 rounded-xl md:rounded-2xl bg-red-500 text-white font-bold text-sm shadow-lg shadow-red-100 hover:bg-red-600 transition-all">Keluar</button>
+                    <button type="submit" class="w-full px-6 py-3.5 rounded-xl md:rounded-2xl bg-red-500 text-white font-bold text-sm shadow-lg shadow-red-100 hover:bg-red-600 transition-all active:scale-95">Keluar</button>
                 </form>
             </div>
         </div>

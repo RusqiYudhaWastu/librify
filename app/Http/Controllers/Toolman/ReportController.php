@@ -6,14 +6,14 @@ use App\Http\Controllers\Controller;
 use App\Models\Loan;
 use App\Models\ProblemReport;
 use Illuminate\Http\Request;
-use Carbon\Carbon; // ✅ Penting buat manipulasi tanggal
-use Barryvdh\DomPDF\Facade\Pdf; // ✅ Penting buat fitur cetak
+use Carbon\Carbon;
+use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Support\Facades\Auth;
 
 class ReportController extends Controller
 {
     /**
-     * Tampilkan Halaman Laporan Toolman (2 Slide)
+     * Tampilkan Halaman Laporan Petugas (2 Slide: Log & Masalah)
      */
     public function index(Request $request)
     {
@@ -21,76 +21,97 @@ class ReportController extends Controller
         $startDate = $request->start_date ? Carbon::parse($request->start_date)->startOfDay() : now()->startOfMonth();
         $endDate = $request->end_date ? Carbon::parse($request->end_date)->endOfDay() : now()->endOfMonth();
 
-        // 2. Slide 1: Ambil Riwayat Sirkulasi Barang (Sesuai Filter)
-        $logs = Loan::with(['user.department', 'item'])
+        // 2. Slide 1: Ambil Riwayat Sirkulasi Buku (Sesuai Filter)
+        // ✅ UPDATE: Relasi department dan classRoom sudah dihapus
+        $logs = Loan::with(['user', 'item'])
             ->whereBetween('created_at', [$startDate, $endDate])
             ->latest()
-            ->get();
+            ->get()
+            ->map(function($log) {
+                // Hitung rata-rata rating user dari riwayat peminjaman yang sudah selesai
+                $log->user_rating = Loan::where('user_id', $log->user_id)
+                    ->where('status', 'returned')
+                    ->avg('rating');
+                return $log;
+            });
 
-        // 3. Slide 2: Ambil Semua Laporan Kendala dari Siswa
-        // (Biasanya laporan butuh dipantau semua statusnya, tidak hanya range tanggal tertentu, 
-        // tapi jika mau di-filter tanggal juga, tambahkan whereBetween seperti di atas)
-        $incomingProblems = ProblemReport::with(['user.department', 'item'])
+        // 3. Slide 2: Ambil Semua Laporan Kendala dari Member
+        // ✅ UPDATE: Relasi department dan classRoom sudah dihapus
+        $incomingProblems = ProblemReport::with(['user', 'item'])
             ->latest()
-            ->get();
+            ->get()
+            ->map(function($problem) {
+                // Petugas bisa liat track record pelapor masalah
+                $problem->user_rating = Loan::where('user_id', $problem->user_id)
+                    ->where('status', 'returned')
+                    ->avg('rating');
+                return $problem;
+            });
 
-        // 4. Hitung Summary (Wajib dikirim ke Blade agar tidak Error)
+        // 4. Hitung Summary
         $summary = [
             'total_logs'       => $logs->count(),
             'pending_problems' => $incomingProblems->where('status', 'pending')->count(),
-            'period'           => $startDate->translatedFormat('d M Y') . ' - ' . $endDate->translatedFormat('d M Y')
+            'period'           => $startDate->translatedFormat('d M Y') . ' - ' . $endDate->translatedFormat('d M Y'),
+            'total_fines'      => $logs->sum('fine_amount') 
         ];
 
         return view('toolman.laporan.index', compact('logs', 'incomingProblems', 'summary'));
     }
 
     /**
-     * Update Status Kendala & Catatan (Slide 2)
+     * Update Status Kendala & Catatan (Slide 2 - Aksi Petugas)
      */
     public function updateProblemStatus(Request $request, $id)
     {
-        // Validasi input status dan catatan admin
         $request->validate([
-            'status'     => 'required|in:pending,checked,fixed',
-            'admin_note' => 'nullable|string' // ✅ Wajib handle ini agar catatan tersimpan
+            'status'     => 'required|in:pending,process,fixed,rejected',
+            'admin_note' => 'nullable|string' 
         ]);
 
         $report = ProblemReport::findOrFail($id);
         
-        // Update data
         $report->update([
             'status'     => $request->status,
-            'admin_note' => $request->admin_note // Simpan catatan perbaikan
+            'admin_note' => $request->admin_note 
         ]);
 
-        return redirect()->back()->with('success', 'Status laporan diperbarui dan catatan tersimpan.');
+        return redirect()->back()->with('success', 'Status laporan buku diperbarui dan catatan tersimpan.');
     }
 
     /**
-     * Cetak Laporan Kerja Toolman ke PDF
+     * Cetak Laporan Kerja Petugas ke PDF
      */
     public function exportPdf(Request $request)
     {
-        // Pastikan filter tanggal di PDF sama dengan yang ada di layar
         $startDate = $request->start_date ? Carbon::parse($request->start_date)->startOfDay() : now()->startOfMonth();
         $endDate = $request->end_date ? Carbon::parse($request->end_date)->endOfDay() : now()->endOfMonth();
 
-        // Ambil Data Sesuai Filter
-        $data = Loan::with(['user.department', 'item'])
+        // Ambil Data Sesuai Filter & Hitung Rating 
+        // ✅ UPDATE: Relasi department dan classRoom sudah dihapus
+        $data = Loan::with(['user', 'item'])
             ->whereBetween('created_at', [$startDate, $endDate])
             ->latest()
-            ->get();
+            ->get()
+            ->map(function($log) {
+                // Inject rating user ke data PDF
+                $log->user_rating = Loan::where('user_id', $log->user_id)
+                    ->where('status', 'returned')
+                    ->avg('rating');
+                return $log;
+            });
 
+        // Siapkan Summary untuk Header PDF
         $summary = [
-            'total'   => $data->count(),
-            'period'  => $startDate->translatedFormat('d F Y') . ' - ' . $endDate->translatedFormat('d F Y'),
-            'toolman' => Auth::user()->name
+            'total'       => $data->count(),
+            'period'      => $startDate->translatedFormat('d F Y') . ' - ' . $endDate->translatedFormat('d F Y'),
+            'toolman'     => Auth::user()->name, // Biarkan key ini jika file view PDF masih manggil $summary['toolman']
+            'total_fines' => $data->sum('fine_amount')
         ];
 
-        // Load View PDF khusus Toolman (Pastikan file view ini ada)
         $pdf = Pdf::loadView('toolman.laporan.pdf', compact('data', 'summary'))
-                  ->setPaper('a4', 'landscape'); // Landscape biar tabel lega
+                  ->setPaper('a4', 'landscape');
 
-        return $pdf->download('Laporan-Kerja-Toolman-'.now()->format('YmdHis').'.pdf');
+        return $pdf->download('Laporan-Kerja-Petugas-'.now()->format('YmdHis').'.pdf');
     }
 }
